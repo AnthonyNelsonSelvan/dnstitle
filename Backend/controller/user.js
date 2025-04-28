@@ -1,4 +1,4 @@
-import User from "../model/User.js";
+import User from "../model/user.js";
 import { setCookie } from "../utils/cookie.js";
 import { handleVerifyPass } from "../utils/pass.js";
 import { handleSignToken } from "../utils/jwt.js";
