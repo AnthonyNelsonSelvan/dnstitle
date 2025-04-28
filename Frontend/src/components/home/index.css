@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+.decor-text{
+    @apply text-center lg:text-8xl text-5xl font-extrabold
+}
