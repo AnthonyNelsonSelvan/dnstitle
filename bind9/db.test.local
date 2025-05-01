@@ -1,0 +1,13 @@
+$TTL 86400
+@    IN    SOA   ns1.test.local. admin.test.local. (
+                2023050101 ; Serial
+                3600      ; Refresh (1 hour)
+                1800      ; Retry (30 minutes)
+                1209600   ; Expire (2 weeks)
+                86400 )   ; Minimum TTL (1 day)
+
+     IN    NS    ns1.test.local.    ; Name server
+
+ns1  IN    A     172.21.0.11      
+www  IN    A     172.21.0.11     
+gogle IN   A     8.8.8.8 

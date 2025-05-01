@@ -16,14 +16,3 @@ COPY ./Frontend /app
 # Build the React/Vite project
 RUN npm run build
 
-# Stage 2: Serve with Nginx
-FROM nginx:alpine
-
-# Copy the build output from the build stage to the Nginx HTML folder
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Expose port 80
-EXPOSE 8080
-
-# Start Nginx in the foreground
-CMD ["nginx", "-g", "daemon off;"]

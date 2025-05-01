@@ -1,3 +1,6 @@
+import dotenv from "dotenv"
+dotenv.config();
+
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -13,7 +16,7 @@ import securityRouter from "./routes/security.js";
 const app = express();
 const PORT = 3000;
 
-connectMongoose("mongodb://127.0.0.1:27017/DnsProject");
+connectMongoose(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/DnsProject");
 
 app.use(
   cors({
