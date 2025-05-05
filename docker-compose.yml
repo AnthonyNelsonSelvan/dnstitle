@@ -25,32 +25,20 @@ services:
       backend_network:
         ipv4_address: 172.20.0.11
 
-  frontend:
-    restart: always
-    build:
-      context: ./nginx
-    container_name: frontend-container
-    ports:
-      - "5173:80"  # Expose the port Nginx listens to
-    networks:
-      frontend_network:
-        ipv4_address: 172.21.0.10
-
   # Nginx service to serve the frontend
   nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile-Frontend
     restart: always
-    image: nginx:alpine
     container_name: nginx-container
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf 
-      - ./frontend/build:/usr/share/nginx/html  
     ports:
-      - "80:80"  # Expose port 80 to access the frontend
-    depends_on:
-      - frontend
+      - "80:80"
     networks:
       frontend_network:
         ipv4_address: 172.21.0.11
+      backend_network:
+        ipv4_address: 172.20.0.13
 
   bind:
     restart: always

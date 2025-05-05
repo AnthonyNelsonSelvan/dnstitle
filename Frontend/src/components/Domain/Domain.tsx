@@ -3,6 +3,7 @@ import Navbar from "../navbar/Navbar";
 import "./index.css";
 import axios from "axios";
 import AddDomain from "./AddDomain";
+import { apiUrl } from "../../config";
 
 const Domain = () => {
   const [message, setMessage] = useState<string>("");
@@ -21,7 +22,7 @@ const Domain = () => {
         return;
       }
       const response = await axios.get(
-        "http://localhost:3000/dns/check-availability",
+        `${apiUrl}/dns/check-availability`,
         {
           params: { dns },
           withCredentials: true,
@@ -32,7 +33,6 @@ const Domain = () => {
       console.log(message);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        // Now TypeScript knows it's an AxiosError
         const msg = err.response?.data?.message || "Something went wrong.";
         setMessage(msg);
       } else {

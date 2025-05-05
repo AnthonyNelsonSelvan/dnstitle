@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AxiosError } from "axios";
 import { useAppSelector } from "../../app/hook";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../../config";
 
 interface Props {
   dnsName: string;
@@ -21,7 +22,7 @@ const AddDomain = ({dnsName} : Props) => {
     e.preventDefault();
     isLoading(true);
     try {
-      const response = await axios.get("http://localhost:3000/dns/verify-ip", {
+      const response = await axios.get(`${apiUrl}/dns/verify-ip`, {
         params: { publicip },
         withCredentials: true,
       });
@@ -45,7 +46,7 @@ const AddDomain = ({dnsName} : Props) => {
   };
   const handleCreateDomain = async() =>{
     try {
-      const response = await axios.post("http://localhost:3000/dns/create-dns",{
+      const response = await axios.post(`${apiUrl}/dns/create-dns`,{
         dnsName,
         publicIp : publicip,
         userRef :_id,

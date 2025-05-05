@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../navbar/Navbar";
 import axios from "axios";
 import { useAppSelector } from "../../app/hook";
+import { apiUrl } from "../../config";
 
 interface DnsRecord {
   _id: string;
@@ -25,7 +26,7 @@ const AllDomains = () => {
       try {
         console.log("req with", _id);
         const response = await axios.get(
-          "http://localhost:3000/dns/userDomains",
+          `${apiUrl}/dns/userDomains`,
           {
             params: { _id },
             withCredentials: true,

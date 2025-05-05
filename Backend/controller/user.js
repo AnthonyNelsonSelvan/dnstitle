@@ -6,25 +6,30 @@ import { handleSignToken } from "../utils/jwt.js";
 async function handleSignUp(req, res) {
   try {
     const { username, password, email } = req.body;
+
+    // Check if username or email already exists
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    if (existingUser) {
+      return res.status(400).json({ message: "Username or email already exists" });
+    }
+
     const user = await User.create({
       username,
       password,
       email,
     });
     console.log(user);
+
     if (user) {
-      return res.status(200).json({ message: "success" });
+      return res.status(200).json({ message: "Success" });
     } else {
-      return res
-        .status(400)
-        .json({ message: "email or username already exist" });
+      return res.status(400).json({ message: "Error creating account" });
     }
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "error creating an account please try few hours later",
-      });
+    console.log(error);
+    res.status(500).json({
+      message: "Error creating an account. Please try again later.",
+    });
   }
 }
 
@@ -49,7 +54,7 @@ async function handleLogIn(req, res) {
     }
   } catch (error) {
     console.error("Error during login:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Unexpected Error" });
   }
 }
 

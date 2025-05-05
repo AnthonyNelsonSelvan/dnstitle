@@ -2,6 +2,16 @@ import { useState } from "react";
 import axios from "axios";
 import "./index.css";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../../config";
+import { AxiosError } from "axios";
+
+interface SuccessResponse {
+  message: string;
+}
+
+interface ErrorResponse {
+  message: string;
+}
 
 const SignUp = () => {
   const [email, setEmail] = useState<string>("");
@@ -10,32 +20,46 @@ const SignUp = () => {
   const [cpassword, setCpassword] = useState<string>("");
   const [error, setError] = useState<boolean>(false);
   const [serror, setSerror] = useState<string>("");
-  const [errorS,setErrorS] = useState<boolean>(false)
+  const [errorS, setErrorS] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const response = await axios.post("http://localhost:3000/user/signup", {
-      username,
-      password,
-      email,
-    });
-    console.log("hmm",response)
-    if(response.status === 200){
-        console.log("navigating to login")
-        navigate("/login")
-    }
-    if (
-      (response.data.message && response.status === 400) ||
-      response.status === 500
-    ) {
+  
+    try {
+      const response = await axios.post<SuccessResponse>(
+        `${apiUrl}/user/signup`,
+        {
+          username,
+          password,
+          email,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+  
+      console.log("Response:", response.data.message);
+      if (response.status === 200) {
+        console.log("Navigating to login");
+        navigate("/login");
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      console.log("Axios Error:", axiosError);
+  
       setErrorS(true);
-      setSerror(response.data.message);
-    } else {
-      setErrorS(true);
-      setSerror("Something went Wrong");
+  
+      if (axiosError.response?.data?.message) {
+        setSerror(axiosError.response.data.message);
+      } else {
+        setSerror("Something went wrong. Please try again.");
+      }
     }
   };
+  
 
   const checkPassword = () => {
     if (password !== cpassword) {
@@ -46,7 +70,7 @@ const SignUp = () => {
   };
   return (
     <div>
-        {errorS && <p className="top-0 bg-amber-50 text-center">{serror}</p>}
+      {errorS && <p className="top-0 bg-amber-50 text-center">{serror}</p>}
       <div className="flex justify-center items-center h-screen">
         <div className="w-120 h-150 rounded bg-[#2C2926] shadow p-6">
           <form className="space-y-4" onSubmit={handleSignUp}>

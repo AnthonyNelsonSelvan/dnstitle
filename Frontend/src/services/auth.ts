@@ -1,9 +1,10 @@
 import axios from "axios";
+import { apiUrl } from "../config";
 
 const checkCookie = async () => {
   try {
     const response = await axios.get(
-      "http://localhost:3000/security/token-verify",
+      `${apiUrl}/security/token-verify`,
       { withCredentials: true, headers: { "Cache-Control": "no-store" } }
     );
     if (response.status === 200 && response.data.user) {
@@ -18,7 +19,7 @@ const checkCookie = async () => {
 };
 const deleteCookie = async () => {
   const logout = await axios.post(
-    "http://localhost:3000/security/logout",
+    `${apiUrl}/security/logout`,
     {},
     {
       withCredentials: true,

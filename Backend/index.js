@@ -20,7 +20,7 @@ connectMongoose(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/DnsProject")
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Change to your frontend URL
+    origin: "http://www.test.local", // Change to your frontend URL
     credentials: true,
   })
 );
@@ -28,16 +28,14 @@ app.use(
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(authenticateUser);
-
-
 app.use(express.json());
 
 app.set("view engine", "ejs");
 app.set("views", "./views");
 
-app.use("/user", userRouter);
-app.use("/dns", dnsRouter);
-app.use("/security", securityRouter);
+app.use("/api/user", userRouter);
+app.use("/api/dns", dnsRouter);
+app.use("/api/security", securityRouter);
 app.use("/", staticRouter);
 
 app.listen(PORT, () => {
