@@ -61,7 +61,7 @@ const Domain = () => {
                 className="flex-grow rounded p-2 bg-[#3A3633] text-[#F5F3EE] outline-none"
                 placeholder="Enter domain..."
                 name="dns"
-                onBlur={(e) => setDns(e.target.value)}
+                onChange={(e) => setDns(e.target.value)}
                 disabled={available}
                 required
               />

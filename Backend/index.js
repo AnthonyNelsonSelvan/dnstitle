@@ -10,7 +10,6 @@ import authenticateUser from "./middleware/auth.js";
 
 import userRouter from "./routes/user.js";
 import dnsRouter from "./routes/dns.js";
-import staticRouter from "./routes/static.js";
 import securityRouter from "./routes/security.js";
 
 const app = express();
@@ -30,13 +29,9 @@ app.use(cookieParser());
 app.use(authenticateUser);
 app.use(express.json());
 
-app.set("view engine", "ejs");
-app.set("views", "./views");
-
 app.use("/api/user", userRouter);
 app.use("/api/dns", dnsRouter);
 app.use("/api/security", securityRouter);
-app.use("/", staticRouter);
 
 app.listen(PORT, () => {
   try {

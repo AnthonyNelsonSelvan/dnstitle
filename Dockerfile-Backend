@@ -1,13 +1,12 @@
 FROM node:20
 
+RUN apt-get update && \
+    apt-get install -y bind9-utils dnsutils && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
-
 COPY Backend/package*.json ./
-
 RUN npm install
-
 COPY Backend .
-
 EXPOSE 3000
-
 CMD [ "npm", "start" ]
