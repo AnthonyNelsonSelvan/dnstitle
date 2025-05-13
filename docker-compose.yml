@@ -12,6 +12,8 @@ services:
     networks:
       backend_network:
         ipv4_address: 172.20.0.10
+    dns:
+      - 172.20.0.12
 
   mongo:
     restart: always
@@ -24,34 +26,38 @@ services:
     networks:
       backend_network:
         ipv4_address: 172.20.0.11
-
-  # Nginx service to serve the frontend
   nginx:
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile-Frontend
-    restart: always
-    container_name: nginx-container
+    container_name: nginx_container
     ports:
       - "80:80"
     networks:
-      frontend_network:
-        ipv4_address: 172.21.0.11
       backend_network:
         ipv4_address: 172.20.0.13
+    dns:
+      - 172.20.0.12
 
-  bind:
-    restart: always
-    build: ./bind9
+  bind9:
+    build:
+      context: .
+      dockerfile: Dockerfile-Bind
     container_name: bind_container
+    image: custom-bind9
     ports:
-      - "53:53/tcp"
       - "53:53/udp"
+      - "53:53/tcp"
+    environment:
+      - BIND9_USER=root
     volumes:
-      - ./bind9:/etc/bind
+      - ./bind/config:/etc/bind
+      - ./bind/cache:/var/cache/bind
+      - ./bind/records:/var/lib/bind
+      - ./bind/log:/var/log/named
+    restart: unless-stopped
     networks:
-      frontend_network:
-        ipv4_address: 172.21.0.12
       backend_network:
         ipv4_address: 172.20.0.12
 
@@ -61,13 +67,6 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/24
-
-  frontend_network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.21.0.0/24
-
 volumes:
   mongo-data:
     driver: local

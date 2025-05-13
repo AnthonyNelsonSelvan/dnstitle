@@ -1,0 +1,5 @@
+zone "anthony.live" {
+    type master;
+    file "/var/lib/bind/db.anthony.live";
+    allow-update { none; };
+};

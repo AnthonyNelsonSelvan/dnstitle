@@ -1,0 +1,16 @@
+# Start from Ubuntu base image
+FROM ubuntu:20.04
+
+# Avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install BIND9 and useful tools
+RUN apt-get update && \
+    apt-get install -y bind9 bind9utils dnsutils && \
+    apt-get clean
+
+# Create necessary directories (redundant but safe)
+RUN mkdir -p /etc/bind /var/cache/bind /var/lib/bind /var/log/named
+
+# Use named running in the foreground (important for Docker)
+CMD [ "named", "-g", "-c", "/etc/bind/named.conf" ]

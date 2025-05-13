@@ -1,4 +1,4 @@
-FROM node:24-slim AS builder
+FROM node:20 AS builder
 WORKDIR /app
 
 COPY ./Frontend/package*.json ./
