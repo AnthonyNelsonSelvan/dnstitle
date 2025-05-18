@@ -1,15 +1,19 @@
-$TTL    604800
-@       IN      SOA     ns1.anthony.live. admin.anthony.live. (
-                              2         ; Serial
-                         604800         ; Refresh
-                          86400         ; Retry
-                        2419200         ; Expire
-                         604800 )       ; Negative Cache TTL
-
-; Name servers
-        IN      NS      ns1.anthony.live.
-
-; A records
-ns1     IN      A       172.20.0.12   ; IP of your BIND container (or public IP if deployed)
-@       IN      A       172.20.0.13   ; Your Nginx or frontend server (homepage)
-test    IN      A       172.20.0.10   ; Example subdomain pointing to backend
+$ORIGIN .
+$TTL 604800	; 1 week
+anthony.live		IN SOA	ns1.anthony.live. admin.anthony.live. (
+				4          ; serial
+				604800     ; refresh (1 week)
+				86400      ; retry (1 day)
+				2419200    ; expire (4 weeks)
+				604800     ; minimum (1 week)
+				)
+			NS	ns1.anthony.live.
+			A	172.20.0.13
+$ORIGIN anthony.live.
+$TTL 3600	; 1 hour
+behappy			A	172.20.0.13
+$TTL 604800	; 1 week
+ns1			A	172.20.0.12
+test			A	172.20.0.10
+$TTL 3600	; 1 hour
+test19			A	216.58.214.14

@@ -3,7 +3,7 @@ dotenv.config();
 
 import express from "express";
 import cookieParser from "cookie-parser";
-import cors from "cors";
+// import cors from "cors";
 
 import { connectMongoose } from "./connection/mongo.js";
 import authenticateUser from "./middleware/auth.js";
@@ -17,12 +17,12 @@ const PORT = 3000;
 
 connectMongoose(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/DnsProject");
 
-app.use(
-  cors({
-    origin: "http://www.test.local", // Change to your frontend URL
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: "http://test.anthony.live", // Change to your frontend URL
+//     credentials: true,
+//   })
+// );
 
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

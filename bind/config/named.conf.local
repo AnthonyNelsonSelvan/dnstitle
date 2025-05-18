@@ -1,5 +1,10 @@
+key "updater.anthony.live" {
+	algorithm hmac-sha256;
+	secret "ZB296bKXPpDYhu+Be/bHAZSA8MfH2XZem84b3N+mCIE=";
+}; 
+
 zone "anthony.live" {
     type master;
     file "/var/lib/bind/db.anthony.live";
-    allow-update { none; };
+    allow-update { key "updater.anthony.live"; 172.20.0.10; };
 };

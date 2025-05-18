@@ -1,27 +1,38 @@
 import { spawn } from "child_process";
 
-const addDomainBind = () => {
-  const nsupdate = spawn("nsupdate", [
-    "-y",
-    "hmac-sha256:mykey:lSi5pcEe1xImu6gUT0bQshah7IHyVvWDO/YlVFGTCp0=",
-  ]); //this key should be in env
+const addDomainBind = (dnsName,publicIp) => {
+  return new Promise((resolve, reject) => {
+    const nsupdate = spawn("nsupdate", ["-k", "/etc/bind/update.key"]);
 
-  nsupdate.stdin.write("server 172.20.0.12\n");
-  nsupdate.stdin.write("zone test.local.\n");
-  nsupdate.stdin.write("update add bruhhuh.test.local. 3600 A 172.21.0.11\n");
-  nsupdate.stdin.write("send\n");
-  nsupdate.stdin.end();
+    nsupdate.stdin.write("server 172.20.0.12\n");
+    nsupdate.stdin.write("zone anthony.live.\n");
+    nsupdate.stdin.write(
+      `update add ${dnsName}.anthony.live. 3600 A ${publicIp}\n`
+    );
+    nsupdate.stdin.write("send\n");
+    nsupdate.stdin.end();
 
-  nsupdate.stdout.on("data", (data) => {
-    console.log(`stdout : ${data}`);
-  });
+    let output = "";
+    let errorOutput = "";
 
-  nsupdate.stderr.on("data", (data) => {
-    console.log(`stderr, ${data}`);
-  });
+    nsupdate.stdout.on("data", (data) => {
+      output += data.toString();
+    });
 
-  nsupdate.on("close", (code) => {
-    console.log(`exited with code ${code} `);
+    nsupdate.stderr.on("data", (data) => {
+      errorOutput += data.toString();
+    });
+
+    nsupdate.on("close", (code) => {
+      if (code === 0) {
+        console.log("✅ Domain added successfully!");
+        resolve(true);  // ✅ Resolves the promise
+      } else {
+        console.error(`❌ nsupdate failed with code ${code}`);
+        console.error(`stderr: ${errorOutput}`);
+        resolve(false);
+      }
+    });
   });
 };
 

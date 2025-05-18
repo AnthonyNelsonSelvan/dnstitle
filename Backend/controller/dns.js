@@ -24,7 +24,13 @@ async function handleCreateDomainName(req, res) {
     });
 
     if(dns){
-      addDomainBind()
+      const isDone = await addDomainBind(dnsName, publicIp);
+      if(isDone){
+        console.log("Done")
+      }else{
+        await DNS.deleteOne({dnsName : dns.dnsName})
+        console.log("Sorry try again")
+      }
     }
 
     return res.status(200).json({
@@ -58,11 +64,8 @@ async function handleCheckAvailability(req, res) {
 
 async function handleGetUserDomains(req, res) {
   try {
-    console.log("start");
     const { _id } = req.query;
-    console.log("user", _id);
     const response = await DNS.find({ userRef: _id });
-    console.log(response);
     return res.status(200).json(response);
   } catch (error) {}
 }
