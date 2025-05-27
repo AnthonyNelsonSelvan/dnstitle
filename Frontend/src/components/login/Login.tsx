@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { apiUrl } from "../../config";
 
 const Login = () => {
-  const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const navigate = useNavigate()
@@ -16,13 +16,12 @@ const Login = () => {
       const response = await axios.post(
         `${apiUrl}/user/login`,
         {
-          username,
+          email,
           password,
         },
         { withCredentials: true }
       );
       if (response.data.success) {
-        console.log("Login successful!");
         navigate("/")
       } else {
         setError("Invalid credentials");
@@ -37,6 +36,9 @@ const Login = () => {
       }
     }
   };
+  const handleGoogleLogin = () => {
+    window.location.href = "http://test.anthony.live/api/auth/google"
+  }
 
   return (
     <div>
@@ -47,15 +49,15 @@ const Login = () => {
               Login
             </h1>
 
-            <label htmlFor="username" className="inputTitle">
-              Username
+            <label htmlFor="email" className="inputTitle">
+              email
             </label>
             <input
               type="text"
-              id="username"
+              id="email"
               className="inputBox"
               onChange={(e) => {
-                setUsername(e.target.value);
+                setEmail(e.target.value);
               }}
               required
             />
@@ -74,6 +76,8 @@ const Login = () => {
             <input type="submit" value={"submit"} className="btn" />
             {error && <p className=" text-red-700 text-center">{error}</p>}
           </form>
+          <p className="text-yellow-500 text-center">other methods</p>
+          <p className="text-green-300 text-center" onClick={handleGoogleLogin}>Authenticate with google</p>
         </div>
       </div>
     </div>

@@ -5,16 +5,15 @@ import { handleSignToken } from "../utils/jwt.js";
 
 async function handleSignUp(req, res) {
   try {
-    const { username, password, email } = req.body;
+    const { email,password } = req.body;
 
-    // Check if username or email already exists
-    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    const existingUser = await User.findOne( { email : email } );
     if (existingUser) {
       return res.status(400).json({ message: "Username or email already exists" });
     }
 
     const user = await User.create({
-      username,
+      authId : email,
       password,
       email,
     });
@@ -34,10 +33,8 @@ async function handleSignUp(req, res) {
 }
 
 async function handleLogIn(req, res) {
-  const { username, password } = req.body;
-  const user = await User.findOne({
-    $or: [{ email: username }, { username: username }],
-  });
+  const { email, password } = req.body;
+  const user = await User.findOne({ email: email });
   if (!user) {
     return res.status(400).json({ message: "Incorrect username or password" });
   }
@@ -50,7 +47,7 @@ async function handleLogIn(req, res) {
     } else {
       return res
         .status(400)
-        .json({ message: "username or password incorrect" });
+        .json({ message: "Incorrect username or password" });
     }
   } catch (error) {
     console.error("Error during login:", error);

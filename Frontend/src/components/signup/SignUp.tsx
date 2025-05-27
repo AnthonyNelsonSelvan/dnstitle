@@ -15,7 +15,6 @@ interface ErrorResponse {
 
 const SignUp = () => {
   const [email, setEmail] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [cpassword, setCpassword] = useState<string>("");
   const [error, setError] = useState<boolean>(false);
@@ -32,9 +31,8 @@ const SignUp = () => {
       const response = await axios.post<SuccessResponse>(
         `${apiUrl}/user/signup`,
         {
-          username,
-          password,
           email,
+          password,
         },
         {
           withCredentials: true,
@@ -87,19 +85,6 @@ const SignUp = () => {
               className="inputBox"
               onChange={(e) => {
                 setEmail(e.target.value);
-              }}
-              required
-            />
-
-            <label htmlFor="username" className="inputTitle">
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              className="inputBox"
-              onChange={(e) => {
-                setUsername(e.target.value);
               }}
               required
             />

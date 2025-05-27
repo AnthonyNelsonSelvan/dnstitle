@@ -26,7 +26,7 @@ function handleLogout(req, res) {
     } catch (err) {
       res.status(500).json({ message : "Logout failed" });
     }
-  };  
+  };//change needed in this before deployment  
 
 
 

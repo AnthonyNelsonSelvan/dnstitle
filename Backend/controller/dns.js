@@ -1,10 +1,10 @@
 import DNS from "../model/dns.js";
-import { addDomainBind } from "../services/dns.services.js";
+import { addDomainBind, deleteDomainBind } from "../services/dns.services.js";
 import profanityCheck from "../utils/profanity.js";
 
 async function handleCreateDomainName(req, res) {
   try {
-    const { dnsName, publicIp, userRef, recordType } = await req.body;
+    const { dnsName, publicIp, userRef, recordType } = req.body;
     if (!dnsName && !publicIp && !type) {
       return res
         .status(400)
@@ -26,10 +26,12 @@ async function handleCreateDomainName(req, res) {
     if(dns){
       const isDone = await addDomainBind(dnsName, publicIp);
       if(isDone){
-        console.log("Done")
+        console.log("it is done added")
+        //maybe alert it is done or not
       }else{
         await DNS.deleteOne({dnsName : dns.dnsName})
-        console.log("Sorry try again")
+        console.log("not Done")
+        return
       }
     }
 
@@ -38,7 +40,35 @@ async function handleCreateDomainName(req, res) {
     });
   } catch (error) {
     console.log(error);
-    return res.json({ message: "Something went Wrong" });
+    return res.status(500).json({ message: "Something went Wrong" });
+  }
+}
+
+async function handleDeleteDomainName(req,res) {
+  try {
+    const {dnsName , userRef} = req.body;
+    const dns = await DNS.findOne({dnsName : dnsName});
+    if(!dns){
+      return res.status(404).json({message : "Domain Name Not Found"})
+    }
+    if(dns.userRef.equals(userRef)){
+      return res.status(403).json({message : "User Verification Failed"});
+    }
+    const isDone = await deleteDomainBind(dnsName);
+    if(isDone){
+      await DNS.deleteOne({dnsName : dns.dnsName})
+      console.log("Deleted")
+    }else{
+      //maybe alert it is done or not
+      console.log("not Done")
+      return
+    }
+
+    return res.status(200).json({message : "Successfully Removed"})
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({message : " Something went wrong"})
   }
 }
 
@@ -74,4 +104,5 @@ export {
   handleCreateDomainName,
   handleCheckAvailability,
   handleGetUserDomains,
+  handleDeleteDomainName,
 };

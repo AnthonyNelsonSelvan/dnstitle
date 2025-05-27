@@ -11,6 +11,7 @@ import authenticateUser from "./middleware/auth.js";
 import userRouter from "./routes/user.js";
 import dnsRouter from "./routes/dns.js";
 import securityRouter from "./routes/security.js";
+import oAuthRouter from "./routes/authRoutes.js"
 
 const app = express();
 const PORT = 3000;
@@ -32,6 +33,7 @@ app.use(express.json());
 app.use("/api/user", userRouter);
 app.use("/api/dns", dnsRouter);
 app.use("/api/security", securityRouter);
+app.use("/api/auth",oAuthRouter);
 
 app.listen(PORT, () => {
   try {
