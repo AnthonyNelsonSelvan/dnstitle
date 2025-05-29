@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 async function validateWebsite(req, res) {
-    const rawUrl = req.query.publicip;
+    const rawUrl = req.query.publicIp;
     console.log(rawUrl);
 
     // Regex: domain OR IPv4 OR IPv6 (with or without brackets)

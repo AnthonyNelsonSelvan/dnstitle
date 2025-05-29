@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { handleCheckAvailability, handleCreateDomainName,handleDeleteDomainName,handleGetUserDomains } from "../controller/dns.js";
+import { handleCheckAvailability, handleCreateDomainName,handleDeleteDomainName,handleGetUserDomains, handleUpdateDomainName } from "../controller/dns.js";
 import validateWebsite from "../utils/validateWeb.js";
 
 const router = Router();
@@ -13,5 +13,7 @@ router.get("/verify-ip",validateWebsite);
 router.get("/userDomains",handleGetUserDomains);
 
 router.delete("/deleteDomain",handleDeleteDomainName);
+
+router.post("/update-domain", handleUpdateDomainName);
 
 export default router;

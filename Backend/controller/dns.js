@@ -1,5 +1,5 @@
 import DNS from "../model/dns.js";
-import { addDomainBind, deleteDomainBind } from "../services/dns.services.js";
+import { addDomainBind, deleteDomainBind, updateDomainBind } from "../services/dns.services.js";
 import profanityCheck from "../utils/profanity.js";
 
 async function handleCreateDomainName(req, res) {
@@ -24,7 +24,7 @@ async function handleCreateDomainName(req, res) {
     });
 
     if(dns){
-      const isDone = await addDomainBind(dnsName, publicIp);
+      const isDone = await addDomainBind(dnsName, publicIp, recordType);
       if(isDone){
         console.log("it is done added")
         //maybe alert it is done or not
@@ -46,18 +46,17 @@ async function handleCreateDomainName(req, res) {
 
 async function handleDeleteDomainName(req,res) {
   try {
-    const {dnsName , userRef} = req.body;
+    const {dnsName , _id} = req.body;
     const dns = await DNS.findOne({dnsName : dnsName});
     if(!dns){
       return res.status(404).json({message : "Domain Name Not Found"})
     }
-    if(dns.userRef.equals(userRef)){
+    if(!(dns.userRef.equals(_id))){
       return res.status(403).json({message : "User Verification Failed"});
     }
     const isDone = await deleteDomainBind(dnsName);
     if(isDone){
       await DNS.deleteOne({dnsName : dns.dnsName})
-      console.log("Deleted")
     }else{
       //maybe alert it is done or not
       console.log("not Done")
@@ -100,9 +99,38 @@ async function handleGetUserDomains(req, res) {
   } catch (error) {}
 }
 
+async function handleUpdateDomainName(req,res) {
+  try {
+    const {dnsName, recordType, publicIp, userRef} = req.body;
+    console.log("1 :", publicIp)
+    const dns = await DNS.findOne({dnsName : dnsName});
+    if(!dns){
+      return res.status(404).json({message : "Domain Name not Found"});
+    }
+    if(!(dns.userRef.equals(userRef))){
+      return res.status(403).json({message : "User Verification Failed"});
+    }
+    console.log("2",publicIp)
+    const isDone = updateDomainBind(dnsName,publicIp,recordType,dns.recordType);
+    if(isDone){
+      console.log("3",publicIp)
+      dns.publicIp = publicIp;
+      dns.recordType = recordType;
+      await dns.save()
+      return res.status(200).json({message : "Domain Updated"});
+    }else{
+      return res.status(400).json({message : "Domain name not Updated"})
+    }
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({message : "Something went wrong"})
+  }
+}
+
 export {
   handleCreateDomainName,
   handleCheckAvailability,
   handleGetUserDomains,
   handleDeleteDomainName,
+  handleUpdateDomainName,
 };

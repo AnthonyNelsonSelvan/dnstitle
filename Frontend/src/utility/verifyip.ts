@@ -1,13 +1,13 @@
 import axios, { AxiosError } from "axios";
 import { apiUrl } from "../config";
 
-export const verifyIp = async (publicip: string): Promise<{
+export const verifyIp = async (publicIp: string): Promise<{
   message: string;
   valid: boolean;
 }> => {
   try {
     const response = await axios.get(`${apiUrl}/dns/verify-ip`, {
-      params: { publicip },
+      params: { publicIp },
       withCredentials: true,
     });
     return {

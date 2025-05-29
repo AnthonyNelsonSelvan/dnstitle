@@ -1,13 +1,13 @@
 import { spawn } from "child_process";
 
-const addDomainBind = (dnsName,publicIp) => {
+const addDomainBind = (dnsName,publicIp,recordType) => {
   return new Promise((resolve, reject) => {
     const nsupdate = spawn("nsupdate", ["-k", "/etc/bind/update.key"]);
 
     nsupdate.stdin.write("server 172.20.0.12\n");
     nsupdate.stdin.write("zone anthony.live.\n");
     nsupdate.stdin.write(
-      `update add ${dnsName}.anthony.live. 3600 A ${publicIp}\n`
+      `update add ${dnsName}.anthony.live. 3600 ${recordType} ${publicIp}\n`
     );
     nsupdate.stdin.write("send\n");
     nsupdate.stdin.end();
@@ -69,14 +69,16 @@ const deleteDomainBind = (dnsName) => {
     })
   })
 }
-const updateDomainBind = (dnsName,publicIp) => {
+const updateDomainBind = (dnsName,publicIp,newRecordType,oldRecordType) => {
   return new Promise((resolve,reject) => {
     const nsupdate = spawn("nsupdate", ["-k","/etc/bind/update.key"]);
 
+    console.log("came here")
     nsupdate.stdin.write("server 172.20.0.12\n");
     nsupdate.stdin.write("zone anthony.live.\n");
-    nsupdate.stdin.write(`update delete ${dnsName}.anthony.live. A\n`);
-    nsupdate.stdin.write(`update add ${dnsName}.anthony.love. 3600 A ${publicIp}\n`)
+    nsupdate.stdin.write(`update delete ${dnsName}.anthony.live. ${oldRecordType}\n`);
+    nsupdate.stdin.write(`update add ${dnsName}.anthony.live. 3600 ${newRecordType} ${publicIp}\n`);
+    nsupdate.stdin.write("send\n");
     nsupdate.stdin.end();
 
     let output = "";
@@ -86,7 +88,7 @@ const updateDomainBind = (dnsName,publicIp) => {
       output = data.toString();
     })
 
-    nsupdate.stderr("data", (data) => {
+    nsupdate.stderr.on("data", (data) => {
       errOutput = data.toString();
     })
 
