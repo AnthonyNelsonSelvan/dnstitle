@@ -9,12 +9,12 @@ async function authenticateUser(req, res, next) {
     }
     const token = req.cookies?.token;
     if (!token) {
-      console.log("login first")
+      console.log("login first")//will do something here
     }
 
     const verified = await handleVerifyToken(token);
     if (!verified) {
-      return console.log("login second")
+      return console.log("login second")//here too
     }
 
     req.user = verified;

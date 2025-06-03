@@ -21,6 +21,9 @@ const dnsSchema =  new Schema({
         ref : "User",
         required : true
     }
+    // ,expiryDate : {
+
+    // }
 },{timestamps : true})
 
 const DNS = model("dns", dnsSchema);

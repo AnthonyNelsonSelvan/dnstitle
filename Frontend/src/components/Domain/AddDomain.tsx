@@ -81,6 +81,7 @@ const AddDomain = ({ dnsName }: Props) => {
               className="ml-1 p-2 bg-white rounded outline-none"
               onChange={(e) => setPublicip(e.target.value)}
               id="publicip"
+              disabled = {valid}
               required
             />
           </div>

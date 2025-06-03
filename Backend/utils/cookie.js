@@ -1,5 +1,4 @@
 function setCookie(res, cookieToken) {
-  console.log("cookie came here : ",cookieToken)
   try {
     res.cookie("token", cookieToken, {
       httpOnly: true,

@@ -1,6 +1,7 @@
 import DNS from "../model/dns.js";
 import { addDomainBind, deleteDomainBind, updateDomainBind } from "../services/dns.services.js";
 import profanityCheck from "../utils/profanity.js";
+import guessRecordType from "../utils/recordType.js";
 
 async function handleCreateDomainName(req, res) {
   try {
@@ -16,6 +17,10 @@ async function handleCreateDomainName(req, res) {
           "please login or signup before trying to make your domain name",
       });
     }
+    const isCorrectRecordType = guessRecordType(publicIp)
+    if(isCorrectRecordType !== recordType){
+      return res.status(400).json({message : "Please select the correct record type, If you are trying with IPV6 (AAA record) it will come soon."});
+    }
     const dns = await DNS.create({
       dnsName,
       publicIp,
@@ -26,11 +31,9 @@ async function handleCreateDomainName(req, res) {
     if(dns){
       const isDone = await addDomainBind(dnsName, publicIp, recordType);
       if(isDone){
-        console.log("it is done added")
         //maybe alert it is done or not
       }else{
         await DNS.deleteOne({dnsName : dns.dnsName})
-        console.log("not Done")
         return
       }
     }
@@ -59,7 +62,6 @@ async function handleDeleteDomainName(req,res) {
       await DNS.deleteOne({dnsName : dns.dnsName})
     }else{
       //maybe alert it is done or not
-      console.log("not Done")
       return
     }
 
@@ -102,7 +104,6 @@ async function handleGetUserDomains(req, res) {
 async function handleUpdateDomainName(req,res) {
   try {
     const {dnsName, recordType, publicIp, userRef} = req.body;
-    console.log("1 :", publicIp)
     const dns = await DNS.findOne({dnsName : dnsName});
     if(!dns){
       return res.status(404).json({message : "Domain Name not Found"});
@@ -110,10 +111,12 @@ async function handleUpdateDomainName(req,res) {
     if(!(dns.userRef.equals(userRef))){
       return res.status(403).json({message : "User Verification Failed"});
     }
-    console.log("2",publicIp)
+    const isCorrectRecordType = guessRecordType(publicIp)
+    if(isCorrectRecordType !== recordType){
+      return res.status(400).json({message : "Please select the correct record type, If you are trying with IPV6 (AAA record) it will come soon."});
+    }
     const isDone = updateDomainBind(dnsName,publicIp,recordType,dns.recordType);
     if(isDone){
-      console.log("3",publicIp)
       dns.publicIp = publicIp;
       dns.recordType = recordType;
       await dns.save()

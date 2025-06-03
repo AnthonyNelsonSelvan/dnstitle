@@ -2,16 +2,13 @@ import { handleVerifyToken } from "../utils/jwt.js";
 
 async function handleTokenVerify(req, res) {
   let token = req.cookies?.token;
-  console.log(token);
   if (!token) {
     return res.status(400).json({ message: "no token recieved" });
   }
   let verified = await handleVerifyToken(token);
   if (!verified) {
-    console.log("not valid");
     return res.status(400).json({ valid: false });
   }
-  console.log(verified);
   return res.status(200).json({ user: verified });
 }
 

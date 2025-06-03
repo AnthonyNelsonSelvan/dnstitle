@@ -43,14 +43,14 @@ const Login = () => {
   return (
     <div>
       <div className="flex justify-center items-center h-screen">
-        <div className="w-90 h-100 rounded bg-[#2C2926] shadow p-5">
+        <div className="w-110 h-135 rounded bg-[#2C2926] shadow p-5">
           <form className="space-y-4" onSubmit={handleLogin}>
             <h1 className="mb-5 rounded font-bold text-3xl text-center font- text-[#E5C07B] p-5">
               Login
             </h1>
 
             <label htmlFor="email" className="inputTitle">
-              email
+              Email
             </label>
             <input
               type="text"
@@ -76,8 +76,9 @@ const Login = () => {
             <input type="submit" value={"submit"} className="btn" />
             {error && <p className=" text-red-700 text-center">{error}</p>}
           </form>
+          <p className="text-red-500 text-center cursor-pointer">forgot password</p>
           <p className="text-yellow-500 text-center">other methods</p>
-          <p className="text-green-300 text-center" onClick={handleGoogleLogin}>Authenticate with google</p>
+          <p className="text-green-300 text-center cursor-pointer" onClick={handleGoogleLogin}>Authenticate with google</p>
         </div>
       </div>
     </div>

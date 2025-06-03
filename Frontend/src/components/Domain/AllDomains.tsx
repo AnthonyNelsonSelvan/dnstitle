@@ -46,7 +46,7 @@ const AllDomains = () => {
 
   const handleDeleteDomain = async (dnsName: string) => {
     try {
-      console.log(_id)
+      console.log(_id);
       const response = await axios.delete(`${apiUrl}/dns/deleteDomain`, {
         data: { dnsName, _id },
         withCredentials: true,
@@ -68,22 +68,22 @@ const AllDomains = () => {
   };
   const handleUpdateDomain = async () => {
     try {
-      console.log(name)
+      console.log(name);
       const response = await axios.post(`${apiUrl}/dns/update-domain`, {
-        dnsName : name,
+        dnsName: name,
         recordType,
-        publicIp, 
-        userRef : _id
-      })
-      if(response.status === 200){
-        window.location.reload()
-      }else{
-        console.log("some error occurred")
+        publicIp,
+        userRef: _id,
+      });
+      if (response.status === 200) {
+        window.location.reload();
+      } else {
+        console.log("some error occurred");
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
   return (
     <>
       <Navbar />
@@ -116,7 +116,10 @@ const AllDomains = () => {
               ) : (
                 <select
                   className="ml-1 p-2 bg-white rounded outline-none"
-                  onChange={(e) => setRecordType(e.target.value)}
+                  onChange={(e) => {
+                    setRecordType(e.target.value);
+                    setValid(false);
+                  }}
                   id="publicip"
                   value={recordType}
                 >
@@ -129,7 +132,10 @@ const AllDomains = () => {
                 className="mr-5 text-gray-700 opacity-80 font-medium text-center"
                 value={!edit ? dns.publicIp : publicIp}
                 disabled={!edit}
-                onChange={(e) => setPublicIp(e.target.value)}
+                onChange={(e) => {
+                  setPublicIp(e.target.value);
+                  setValid(false);
+                }}
               />
               {!edit ? (
                 <>
@@ -147,7 +153,7 @@ const AllDomains = () => {
                       setEditId(dns._id);
                       setPublicIp(dns.publicIp);
                       setRecordType(dns.recordType);
-                      setName(dns.dnsName)
+                      setName(dns.dnsName);
                     }}
                   >
                     Edit
@@ -177,7 +183,13 @@ const AllDomains = () => {
                   >
                     save
                   </button>
-                  <button onClick={() => {window.location.reload()}}>cancel</button>
+                  <button
+                    onClick={() => {
+                      window.location.reload();
+                    }}
+                  >
+                    cancel
+                  </button>
                 </>
               )}
             </div>

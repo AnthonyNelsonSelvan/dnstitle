@@ -1,4 +1,4 @@
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 dotenv.config();
 
 import express from "express";
@@ -11,12 +11,15 @@ import authenticateUser from "./middleware/auth.js";
 import userRouter from "./routes/user.js";
 import dnsRouter from "./routes/dns.js";
 import securityRouter from "./routes/security.js";
-import oAuthRouter from "./routes/authRoutes.js"
+import oAuthRouter from "./routes/authRoutes.js";
+import passwordRouter from "./routes/password.js";
 
 const app = express();
 const PORT = 3000;
 
-connectMongoose(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/DnsProject");
+connectMongoose(
+  process.env.MONGO_URI || "mongodb://127.0.0.1:27017/DnsProject"
+);
 
 // app.use(
 //   cors({
@@ -33,7 +36,8 @@ app.use(express.json());
 app.use("/api/user", userRouter);
 app.use("/api/dns", dnsRouter);
 app.use("/api/security", securityRouter);
-app.use("/api/auth",oAuthRouter);
+app.use("/api/auth", oAuthRouter);
+app.use("/api/password", passwordRouter);
 
 app.listen(PORT, () => {
   try {

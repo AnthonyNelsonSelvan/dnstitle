@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import "./index.css";
 import { useNavigate } from "react-router-dom";
 import { apiUrl } from "../../config";
 import { AxiosError } from "axios";
+import checkPasswordStrength from "../../utility/checkPasswordStrength";
 
 interface SuccessResponse {
   message: string;
@@ -17,12 +18,26 @@ const SignUp = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [cpassword, setCpassword] = useState<string>("");
-  const [error, setError] = useState<boolean>(false);
   const [serror, setSerror] = useState<string>("");
-  const [errorS, setErrorS] = useState<boolean>(false);
+  const [passStrength,setPassStrength] = useState<string>("");
+  const [error, setError] = useState<boolean>(false);
+  const [valid,setValid] = useState<boolean>(false)
   const navigate = useNavigate();
 
-  
+  useEffect(() => {
+  const passwordStrength = () => {
+    const response = checkPasswordStrength(password)
+    if(password.length === 0) return setValid(false);
+    if(3 >= response.score){
+      setPassStrength("Try Some Stronger Password.")
+      setValid(false)
+      return
+    }
+    setPassStrength("")
+    setValid(true)
+  }
+  passwordStrength()
+},[password])
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,8 +63,6 @@ const SignUp = () => {
       const axiosError = error as AxiosError<ErrorResponse>;
       console.log("Axios Error:", axiosError);
   
-      setErrorS(true);
-  
       if (axiosError.response?.data?.message) {
         setSerror(axiosError.response.data.message);
       } else {
@@ -68,9 +81,9 @@ const SignUp = () => {
   };
   return (
     <div>
-      {errorS && <p className="top-0 bg-amber-50 text-center">{serror}</p>}
+      {serror && <p className="top-0 bg-amber-50 text-center">{serror}</p>}
       <div className="flex justify-center items-center h-screen">
-        <div className="w-120 h-150 rounded bg-[#2C2926] shadow p-6">
+        <div className="w-110 h-142 rounded bg-[#2C2926] shadow p-6">
           <form className="space-y-4" onSubmit={handleSignUp}>
             <h1 className="mb-5 rounded font-bold text-3xl text-center font- text-[#E5C07B] p-5">
               Sign-Up
@@ -100,6 +113,7 @@ const SignUp = () => {
               }}
               required
             />
+            {passStrength && <p className="text-red-500">{passStrength}</p>}
             <label htmlFor="cpassword" className="inputTitle">
               Confirm Password
             </label>
@@ -113,8 +127,8 @@ const SignUp = () => {
               onKeyUp={checkPassword}
               required
             />
-            {error && <p>password does not match</p>}
-            <input type="submit" value={"submit"} className="btn" />
+            {error && <p className="text-center">password does not match</p>}
+            <input type="submit" value={"Sign Up"} className="btn" disabled={!valid}/>
           </form>
         </div>
       </div>

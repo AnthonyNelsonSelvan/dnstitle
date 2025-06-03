@@ -1,7 +1,7 @@
 $ORIGIN .
 $TTL 604800	; 1 week
 anthony.live		IN SOA	ns1.anthony.live. admin.anthony.live. (
-				31         ; serial
+				43         ; serial
 				604800     ; refresh (1 week)
 				86400      ; retry (1 day)
 				2419200    ; expire (4 weeks)
@@ -12,3 +12,6 @@ anthony.live		IN SOA	ns1.anthony.live. admin.anthony.live. (
 $ORIGIN anthony.live.
 ns1			A	172.20.0.12
 test			A	172.20.0.10
+$TTL 3600	; 1 hour
+test1			CNAME	google.com.
+test2			A	216.58.214.14
