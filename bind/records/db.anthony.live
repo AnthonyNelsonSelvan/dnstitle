@@ -12,6 +12,3 @@ anthony.live		IN SOA	ns1.anthony.live. admin.anthony.live. (
 $ORIGIN anthony.live.
 ns1			A	172.20.0.12
 test			A	172.20.0.10
-$TTL 3600	; 1 hour
-test1			CNAME	google.com.
-test2			A	216.58.214.14

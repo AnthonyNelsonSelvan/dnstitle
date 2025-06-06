@@ -12,6 +12,7 @@ const transporter = nodemailer.createTransport({
 });
 
 function sendEmail(to, subject, text) {
+  console.log(to)
   return new Promise((resolve, reject) => {
     const mailOptions = {
       from: `"Domain Services" <${process.env.EMAIL_USER}>`,

@@ -128,7 +128,7 @@ const SignUp = () => {
               required
             />
             {error && <p className="text-center">password does not match</p>}
-            <input type="submit" value={"Sign Up"} className="btn" disabled={!valid}/>
+            <input type="submit" value={"Sign Up"} className="btn" disabled={!valid && error}/>
           </form>
         </div>
       </div>

@@ -76,7 +76,7 @@ const Login = () => {
             <input type="submit" value={"submit"} className="btn" />
             {error && <p className=" text-red-700 text-center">{error}</p>}
           </form>
-          <p className="text-red-500 text-center cursor-pointer">forgot password</p>
+          <p className="text-red-500 text-center cursor-pointer" onClick={() => navigate("/forgot-password")}>forgot password</p>
           <p className="text-yellow-500 text-center">other methods</p>
           <p className="text-green-300 text-center cursor-pointer" onClick={handleGoogleLogin}>Authenticate with google</p>
         </div>

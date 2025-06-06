@@ -1,10 +1,10 @@
 import { handleVerifyToken } from "../utils/jwt.js";
 
-const publicRoutes = ["/user/login", "/user/signup"]
+const publicRoutes = ["/api/user/login", "/api/user/signup","/api/password/forgot-password","/api/password/verify-token"]
 
 async function authenticateUser(req, res, next) {
   try {
-    if(publicRoutes.includes(req.path)){
+    if(publicRoutes.some(route => req.path.startsWith(route))){
       return next();
     }
     const token = req.cookies?.token;
