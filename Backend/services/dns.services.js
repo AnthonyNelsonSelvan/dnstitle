@@ -35,13 +35,13 @@ const addDomainBind = (dnsName,publicIp,recordType) => {
   });
 };
 
-const deleteDomainBind = (dnsName) => {
+const deleteDomainBind = (dnsName,recordType) => {
   return new Promise((resolve,reject) => {
     const nsupdate = spawn("nsupdate", ["-k","/etc/bind/update.key"]);
 
     nsupdate.stdin.write("server 172.20.0.12\n");
     nsupdate.stdin.write("zone anthony.live.\n");
-    nsupdate.stdin.write(`update delete ${dnsName}.anthony.live. A\n`);
+    nsupdate.stdin.write(`update delete ${dnsName}.anthony.live. ${recordType}\n`);
     nsupdate.stdin.write("send\n");
     nsupdate.stdin.end();
 

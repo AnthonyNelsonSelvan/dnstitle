@@ -57,7 +57,7 @@ async function handleDeleteDomainName(req,res) {
     if(!(dns.userRef.equals(_id))){
       return res.status(403).json({message : "User Verification Failed"});
     }
-    const isDone = await deleteDomainBind(dnsName);
+    const isDone = await deleteDomainBind(dnsName,dns.recordType);
     if(isDone){
       await DNS.deleteOne({dnsName : dns.dnsName})
     }else{

@@ -7,7 +7,7 @@ function setCookie(res, cookieToken) {
       maxAge: 3600000,
     });
   } catch (error) {
-    console.log(error)
+    console.log(error)//change before deployment needed
   }
 }
 

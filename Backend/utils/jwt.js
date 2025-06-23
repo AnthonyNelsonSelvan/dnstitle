@@ -1,17 +1,27 @@
+import dotenv from "dotenv";
+
+dotenv.config();
+
 import jwt from "jsonwebtoken";
-const SecretKey = "f54re6f54wr6f";
+const LoginSecretKey = process.env.LOGIN_JWT_SECRET;
+const EmailSecretKey = process.env.EMAIL_JWT_SECRET;
 
 async function handleSignToken(token) {
   const signedToken = jwt.sign(
     { _id: token._id, username: token.username, email: token.email },
-    SecretKey
+    LoginSecretKey
   );
   return signedToken;
 }
 
+async function handleSignEmailToken(email) {
+  const signedToken = jwt.sign({ email: email }, EmailSecretKey);
+  return signedToken;
+} //for email verification cookie
+
 async function handleVerifyToken(token) {
   try {
-    const verified = jwt.verify(token, SecretKey);
+    const verified = jwt.verify(token, LoginSecretKey);
     return { valid: true, user: verified };
   } catch (err) {
     console.log("Token verification failed:", err.message); // Log the exact error message
@@ -19,4 +29,4 @@ async function handleVerifyToken(token) {
   }
 }
 
-export { handleSignToken, handleVerifyToken };
+export { handleSignToken, handleSignEmailToken, handleVerifyToken };

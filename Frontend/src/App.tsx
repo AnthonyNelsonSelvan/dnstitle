@@ -7,6 +7,7 @@ import Domain from "./components/Domain/Domain";
 import AllDomains from "./components/Domain/AllDomains";
 import ForgotPassword from "./components/password/ForgotPassword";
 import ResetPassword from "./components/resetPassword/ResetPassword";
+import VerifyPage from "./components/verifyPassword/VerifyPage";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/" element={<Home/>} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/verify-email-page/:email/:token" element={<VerifyPage />} />
       </Routes>
     </Router>
   );

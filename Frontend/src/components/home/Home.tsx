@@ -19,12 +19,14 @@ const Home = () => {
             Free Subdomains. Unlimited Possibilities.
           </p>
         </div>
-        <div className="flex justify-center items-center w-full h-55 
+        <div
+          className="flex justify-center items-center w-full h-55 
                 lg:m-5 text-center text-[#B4A39A] text-3xl 
                 shadow-2xl rounded-3xl p-4 m-5 
                 border-t-4 border-l-0 border-r-4 border-b-0 
                 border-white border-opacity-40 
-                bg-gradient-to-br from-[#1E1B18] to-[#B4A39A]/10">
+                bg-gradient-to-br from-[#1E1B18] to-[#B4A39A]/10"
+        >
           <p>
             "Host your website, portfolio, or app with a free subdomain. No
             hidden fees!"

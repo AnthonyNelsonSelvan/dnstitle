@@ -6,7 +6,6 @@ import ChangePassword from "./ChangePassword";
 const ResetPassword = () => {
   const [verified, setVerified] = useState<boolean>(false);
   const { token } = useParams();
-  console.log(token)
   useEffect(() => {
     const handleVerifyToken = async () => {
       try {
