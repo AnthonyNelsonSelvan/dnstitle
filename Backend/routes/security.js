@@ -2,8 +2,8 @@ import { Router } from "express";
 import { handleLogout, handleTokenVerify } from "../controller/security.js";
 import { handleSignEmailToken } from "../utils/jwt.js";
 import TempUser from "../model/temp.user.js";
-import sendEmail from "../services/email.services.js";
 import User from "../model/user.js"
+import sendEmailJob from "../queue/email.job.js";
 
 const router = Router();
 
@@ -35,7 +35,7 @@ router.post("/email-verification", async (req, res) => {
     })
     const resetSubject = "Verifying email";
     const resetText = `verification email please ignore this if you don't know what is this : http://test.anthony.live/verify-email-page/${email}/${jwt}`
-    const isSent = await sendEmail(email, resetSubject, resetText);
+    const isSent = await sendEmailJob(email, resetSubject, resetText);
     if (!isSent) {
       return res
         .status(400)

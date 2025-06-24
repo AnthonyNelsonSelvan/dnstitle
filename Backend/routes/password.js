@@ -1,6 +1,6 @@
 import { Router } from "express";
 import User from "../model/user.js";
-import sendEmail from "../services/email.services.js";
+import sendEmailJob from "../queue/email.job.js";
 import crypto from "crypto";
 
 const router = Router();
@@ -20,7 +20,7 @@ router.post("/forgot-password", async (req, res) => {
     await user.save();
     const resetSubject = "Dnstitle Reset Password..";
     const resetText = `click the link and reset the password, http://test.anthony.live/reset-password/${rawToken}`;
-    const isSent = await sendEmail(email, resetSubject, resetText);
+    const isSent = await sendEmailJob(email, resetSubject, resetText);
     if (!isSent) {
       user.resetToken = undefined;
       user.resetTokenExpiry = undefined;

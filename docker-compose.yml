@@ -19,6 +19,20 @@ services:
       - 8.8.8.8
       - 1.1.1.1
 
+  redis:
+    restart: always
+    image: redis
+    ports:
+      - 6379:6379
+    networks:
+      backend_network:
+        ipv4_address: 172.20.0.14
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+      timeout: 2s
+
   mongo:
     restart: always
     image: mongo:latest
@@ -64,6 +78,23 @@ services:
     networks:
       backend_network:
         ipv4_address: 172.20.0.12
+
+  email_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile-Backend
+    container_name: email_worker
+    command: node worker/email.worker.js
+    depends_on:
+      - redis
+    env_file:
+      - /Backend/.env
+    networks:
+      backend_network:
+        ipv4_address: 172.20.0.15
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
 
 networks:
   backend_network:
