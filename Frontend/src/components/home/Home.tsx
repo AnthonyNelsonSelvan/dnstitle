@@ -4,8 +4,11 @@ import pic2 from "../../assets/pic2.jpg";
 import pic3 from "../../assets/pic3.jpg";
 import pic4 from "../../assets/pic4.jpg";
 import "./index.css";
+import { useAppSelector } from "../../app/hook";
 
 const Home = () => {
+  const _id = useAppSelector((state) => state.user.user?._id)
+  console.log(_id)
   return (
     <div>
       <Navbar />

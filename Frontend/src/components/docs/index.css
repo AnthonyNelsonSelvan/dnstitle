@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+.btn{
+    @apply w-full rounded mt-6 p-3 text-[#1E1B18] bg-[#E5C07B] hover:bg-[#e7cea1]
+}
+
+.inputBox{
+    @apply block border-none bg-[#3A3633] text-[#F5F3EE] focus:shadow  w-full h-10 rounded focus:outline-none border pl-2
+}

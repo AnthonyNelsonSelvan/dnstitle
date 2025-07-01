@@ -87,14 +87,29 @@ services:
     command: node worker/email.worker.js
     depends_on:
       - redis
-    env_file:
-      - /Backend/.env
     networks:
       backend_network:
         ipv4_address: 172.20.0.15
     dns:
       - 8.8.8.8
       - 1.1.1.1
+  
+  bind_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile-Backend
+    container_name: bind_worker
+    command: node worker/bind.worker.js
+    depends_on:
+      - redis
+      - bind9
+    volumes:
+      - ./secrets/update.key:/etc/bind/update.key:ro
+    networks:
+      backend_network:
+        ipv4_address: 172.20.0.16
+    dns:
+      - 172.20.0.12
 
 networks:
   backend_network:

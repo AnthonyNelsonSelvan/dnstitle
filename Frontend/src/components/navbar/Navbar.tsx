@@ -44,7 +44,7 @@ const Navbar = () => {
         {auth ? (
           <>
           <li className="mr-3 hover:text-[#d5bf96]">{user}</li>
-            <li className="mr-3 hover:text-[#d5bf96]">Docs</li>
+            <li className="mr-3 hover:text-[#d5bf96]"><a href="/docs/Generate-code">Docs</a></li>
             <li className="mr-3 hover:text-[#d5bf96]"><a href="/all-domain">Domains</a></li>
             <li>
             <button

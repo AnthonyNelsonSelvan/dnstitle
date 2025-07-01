@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Navbar from "../navbar/Navbar";
-import "./index.css";
 import axios from "axios";
 import AddDomain from "./AddDomain";
 import { apiUrl } from "../../config";

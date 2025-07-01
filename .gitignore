@@ -27,6 +27,7 @@ mongo-data/
 bind/cache/
 bind/records/
 bind/log/
+secrets/
 
 # Optional lock files (uncomment if needed)
 # package-lock.json

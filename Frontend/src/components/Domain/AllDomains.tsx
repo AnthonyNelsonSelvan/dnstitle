@@ -25,11 +25,14 @@ const AllDomains = () => {
   const [recordType, setRecordType] = useState<string>("");
   const [name, setName] = useState<string>("");
   const _id = useAppSelector((state) => state.user.user?._id);
+  
 
+  
   useEffect(() => {
-    if (!_id) return;
-
+    
     const getDomains = async () => {
+      if (!_id) return;
+      console.log(_id);
       try {
         const response = await axios.get(`${apiUrl}/dns/userDomains`, {
           params: { _id },
@@ -61,7 +64,7 @@ const AllDomains = () => {
     e.preventDefault();
     isLoading(true);
 
-    const result = await verifyIp(publicIp);
+    const result = await verifyIp(publicIp, _id);
 
     setValid(result.valid);
     isLoading(false);

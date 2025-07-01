@@ -1,5 +1,5 @@
 import DNS from "../model/dns.js";
-import { addDomainBind, deleteDomainBind, updateDomainBind } from "../services/dns.services.js";
+import sendBindJob from "../queue/bindUpdate.job.js";
 import profanityCheck from "../utils/profanity.js";
 import guessRecordType from "../utils/recordType.js";
 
@@ -17,9 +17,12 @@ async function handleCreateDomainName(req, res) {
           "please login or signup before trying to make your domain name",
       });
     }
-    const isCorrectRecordType = guessRecordType(publicIp)
-    if(isCorrectRecordType !== recordType){
-      return res.status(400).json({message : "Please select the correct record type, If you are trying with IPV6 (AAA record) it will come soon."});
+    const isCorrectRecordType = guessRecordType(publicIp);
+    if (isCorrectRecordType !== recordType) {
+      return res.status(400).json({
+        message:
+          "Please select the correct record type, If you are trying with IPV6 (AAA record) it will come soon.",
+      });
     }
     const dns = await DNS.create({
       dnsName,
@@ -28,13 +31,17 @@ async function handleCreateDomainName(req, res) {
       userRef,
     });
 
-    if(dns){
-      const isDone = await addDomainBind(dnsName, publicIp, recordType);
-      if(isDone){
+    if (dns) {
+      const isDone = await sendBindJob("add-domain", {
+        dnsName: dnsName,
+        publicIp: publicIp,
+        recordType: recordType,
+      });
+      if (isDone) {
         //maybe alert it is done or not
-      }else{
-        await DNS.deleteOne({dnsName : dns.dnsName})
-        return
+      } else {
+        await DNS.deleteOne({ dnsName: dns.dnsName });
+        return;
       }
     }
 
@@ -47,29 +54,31 @@ async function handleCreateDomainName(req, res) {
   }
 }
 
-async function handleDeleteDomainName(req,res) {
+async function handleDeleteDomainName(req, res) {
   try {
-    const {dnsName , _id} = req.body;
-    const dns = await DNS.findOne({dnsName : dnsName});
-    if(!dns){
-      return res.status(404).json({message : "Domain Name Not Found"})
+    const { dnsName, _id } = req.body;
+    const dns = await DNS.findOne({ dnsName: dnsName });
+    if (!dns) {
+      return res.status(404).json({ message: "Domain Name Not Found" });
     }
-    if(!(dns.userRef.equals(_id))){
-      return res.status(403).json({message : "User Verification Failed"});
+    if (!dns.userRef.equals(_id)) {
+      return res.status(403).json({ message: "User Verification Failed" });
     }
-    const isDone = await deleteDomainBind(dnsName,dns.recordType);
-    if(isDone){
-      await DNS.deleteOne({dnsName : dns.dnsName})
-    }else{
+    const isDone = await sendBindJob("delete-domain", {
+      dnsName: dnsName,
+      recordType: dns.recordType,
+    });
+    if (isDone) {
+      await DNS.deleteOne({ dnsName: dns.dnsName });
+    } else {
       //maybe alert it is done or not
-      return
+      return;
     }
 
-    return res.status(200).json({message : "Successfully Removed"})
-
+    return res.status(200).json({ message: "Successfully Removed" });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({message : " Something went wrong"})
+    return res.status(500).json({ message: " Something went wrong" });
   }
 }
 
@@ -101,32 +110,40 @@ async function handleGetUserDomains(req, res) {
   } catch (error) {}
 }
 
-async function handleUpdateDomainName(req,res) {
+async function handleUpdateDomainName(req, res) {
   try {
-    const {dnsName, recordType, publicIp, userRef} = req.body;
-    const dns = await DNS.findOne({dnsName : dnsName});
-    if(!dns){
-      return res.status(404).json({message : "Domain Name not Found"});
+    const { dnsName, recordType, publicIp, userRef } = req.body;
+    const dns = await DNS.findOne({ dnsName: dnsName });
+    if (!dns) {
+      return res.status(404).json({ message: "Domain Name not Found" });
     }
-    if(!(dns.userRef.equals(userRef))){
-      return res.status(403).json({message : "User Verification Failed"});
+    if (!dns.userRef.equals(userRef)) {
+      return res.status(403).json({ message: "User Verification Failed" });
     }
-    const isCorrectRecordType = guessRecordType(publicIp)
-    if(isCorrectRecordType !== recordType){
-      return res.status(400).json({message : "Please select the correct record type, If you are trying with IPV6 (AAA record) it will come soon."});
+    const isCorrectRecordType = guessRecordType(publicIp);
+    if (isCorrectRecordType !== recordType) {
+      return res.status(400).json({
+        message:
+          "Please select the correct record type, If you are trying with IPV6 (AAA record) it will come soon.",
+      });
     }
-    const isDone = updateDomainBind(dnsName,publicIp,recordType,dns.recordType);
-    if(isDone){
+    const isDone = await sendBindJob("update-domain", {
+      dnsName: dnsName,
+      publicIp: publicIp,
+      recordType: recordType,
+      oldRecordType: dns.recordType,
+    });
+    if (isDone) {
       dns.publicIp = publicIp;
       dns.recordType = recordType;
-      await dns.save()
-      return res.status(200).json({message : "Domain Updated"});
-    }else{
-      return res.status(400).json({message : "Domain name not Updated"})
+      await dns.save();
+      return res.status(200).json({ message: "Domain Updated" });
+    } else {
+      return res.status(400).json({ message: "Domain name not Updated" });
     }
   } catch (error) {
-    console.log(error)
-    return res.status(500).json({message : "Something went wrong"})
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
   }
 }
 

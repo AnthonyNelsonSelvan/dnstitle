@@ -22,7 +22,7 @@ const AddDomain = ({ dnsName }: Props) => {
     e.preventDefault();
     isLoading(true);
 
-    const result = await verifyIp(publicip);
+    const result = await verifyIp(publicip, _id);
 
     setMessage(result.message);
     setValid(result.valid);

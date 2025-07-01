@@ -8,6 +8,7 @@ import AllDomains from "./components/Domain/AllDomains";
 import ForgotPassword from "./components/password/ForgotPassword";
 import ResetPassword from "./components/resetPassword/ResetPassword";
 import VerifyPage from "./components/verifyPassword/VerifyPage";
+import GenerateKey from "./components/docs/GenerateKey";
 
 function App() {
   return (
@@ -21,6 +22,9 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/verify-email-page/:email/:token" element={<VerifyPage />} />
+        <Route path="/docs/Generate-code" element={<GenerateKey />} />
+        {/* 404 not found Page
+        lazy loading */}
       </Routes>
     </Router>
   );
