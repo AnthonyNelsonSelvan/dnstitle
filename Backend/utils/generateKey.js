@@ -1,4 +1,4 @@
-export const handleGenerateKey = (length) =>{
+export const handleFuncGenerateKey = (length) =>{
   let char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
   let result = "";
 
