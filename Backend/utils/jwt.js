@@ -8,7 +8,7 @@ const EmailSecretKey = process.env.EMAIL_JWT_SECRET;
 
 async function handleSignToken(token) {
   const signedToken = jwt.sign(
-    { _id: token._id, username: token.username, email: token.email },
+    { _id: token._id, username: token.username, email: token.email,isBanned : token.isBanned},
     LoginSecretKey
   );
   return signedToken;

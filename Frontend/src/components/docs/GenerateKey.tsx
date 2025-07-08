@@ -8,11 +8,8 @@ const GenerateKey = () => {
   const [authKey, setAuthKey] = useState<string>("");
   const _id = useAppSelector((state) => state.user.user?._id);
 
-  console.log(_id);
-
   useEffect(() => {
     if (!_id) return;
-    console.log(_id);
     const handleFetchAuthKey = async () => {
       try {
         const response = await axios.get(

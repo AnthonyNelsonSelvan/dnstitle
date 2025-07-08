@@ -31,7 +31,10 @@ const userSchema = new Schema({
     },
     resetTokenExpiry : {
         type : Date
-    },
+    },isBanned : {
+        type : Boolean,
+        default : false,
+    }
 })
 
 userSchema.pre("save", async function (next) {

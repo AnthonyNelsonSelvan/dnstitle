@@ -17,6 +17,9 @@ async function authenticateUser(req, res, next) {
       return console.log("login second")//here too
     }
 
+    if(verified.isBanned){
+      return res.status(400).json({message : "Your Account has Been Banned Permenantly"})
+    }
     req.user = verified;
 
     return next();

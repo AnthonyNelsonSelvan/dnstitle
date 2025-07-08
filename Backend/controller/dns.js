@@ -1,4 +1,5 @@
 import DNS from "../model/dns.js";
+import DomainLimit from "../model/dns.limit.js";
 import sendBindJob from "../queue/bindUpdate.job.js";
 import profanityCheck from "../utils/profanity.js";
 import guessRecordType from "../utils/recordType.js";
@@ -6,7 +7,7 @@ import guessRecordType from "../utils/recordType.js";
 async function handleCreateDomainName(req, res) {
   try {
     const { dnsName, publicIp, userRef, recordType } = req.body;
-    if (!dnsName && !publicIp && !type) {
+    if (!dnsName && !publicIp && !recordType) {
       return res
         .status(400)
         .json({ message: "all fields are required to fill" });
@@ -24,6 +25,24 @@ async function handleCreateDomainName(req, res) {
           "Please select the correct record type, If you are trying with IPV6 (AAA record) it will come soon.",
       });
     }
+
+    let domainUser = await DomainLimit.findOne({ userId: userRef });
+
+    if (!domainUser) {
+      domainUser = await DomainLimit.create({
+        userId: userRef,
+        domainCount: 0,
+        domainLimit: 3,
+      });
+    }
+
+    if (domainUser.domainLimit <= domainUser.domainCount) {
+      return res.status(400).json({
+        message:
+          "You encountered your free domain limit, Please buy your next domain at just 19 ruppee.",
+      });
+    }
+
     const dns = await DNS.create({
       dnsName,
       publicIp,
@@ -38,10 +57,15 @@ async function handleCreateDomainName(req, res) {
         recordType: recordType,
       });
       if (isDone) {
-        //maybe alert it is done or not
+        await DomainLimit.updateOne(
+          { userId: userRef },
+          { $inc: { domainCount: 1 } }
+        );
       } else {
         await DNS.deleteOne({ dnsName: dns.dnsName });
-        return;
+        return res.status(500).json({
+          message: "Failed to update DNS records. Please try again.",
+        });
       }
     }
 
@@ -70,6 +94,10 @@ async function handleDeleteDomainName(req, res) {
     });
     if (isDone) {
       await DNS.deleteOne({ dnsName: dns.dnsName });
+      await DomainLimit.updateOne(
+        { userId: _id },
+        { $inc : { domainCount: -1 } }
+      );
     } else {
       //maybe alert it is done or not
       return;

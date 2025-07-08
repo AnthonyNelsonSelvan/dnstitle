@@ -98,7 +98,7 @@ async function handleGenerateKey(req, res) {
   try {
     const Key = handleFuncGenerateKey(10);
     console.log(Key);
-    await redis.set(`Verify:${id}`, `${Key}`);
+    await redis.set(`Verify:${id}`, `${Key}`, "EX", 3600);
     return res.status(200).json({ secret: Key });
   } catch (error) {
     console.log(error);
@@ -124,5 +124,5 @@ export {
   handleVerifyEmail,
   handleVerifyConfirmEmail,
   handleGenerateKey,
-  handleWebVerifyKey
+  handleWebVerifyKey,
 };
