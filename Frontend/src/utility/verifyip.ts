@@ -4,6 +4,7 @@ import { apiUrl } from "../config";
 export const verifyIp = async (rawUrl: string,id : string | undefined): Promise<{
   message: string;
   valid: boolean;
+  status : number
 }> => {
   try {
     const response = await axios.get(`${apiUrl}/dns/verify-ip`, {
@@ -12,14 +13,15 @@ export const verifyIp = async (rawUrl: string,id : string | undefined): Promise<
     });
     return {
       message: response.data.message,
-      valid: response.status === 200,
+      valid: true,
+      status : response.status,
     };
   } catch (err: unknown) {
     const error = err as AxiosError<{ message: string }>;
     if (error.response?.data?.message) {
-      return { message: error.response.data.message, valid: false };
+      return { message: error.response.data.message, valid: false,status: error.response.status };
     } else {
-      return { message: "Failed to verify IP. Please try again later.", valid: false };
+      return { message: "Failed to verify IP. Please try again later.", valid: false,status: 500 };
     }
   }
 };

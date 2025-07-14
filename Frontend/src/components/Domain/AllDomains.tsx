@@ -4,6 +4,7 @@ import axios from "axios";
 import { useAppSelector } from "../../app/hook";
 import { apiUrl } from "../../config";
 import { verifyIp } from "../../utility/verifyip";
+import Loader from "../overlays/Loader";
 
 interface DnsRecord {
   _id: string;
@@ -95,6 +96,7 @@ const AllDomains = () => {
           className={`grid ${!editId ? "grid-cols-5" : "grid-cols-6"}
          text-center border border-yellow-500 p-5`}
         >
+          {loading && <Loader />}
           <p className="mr-5 text-white font-bold">Domain</p>
           <p className="mr-5 text-white font-bold">Record</p>
           <p className="mr-5 text-white font-bold">IP</p>

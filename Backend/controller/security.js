@@ -25,9 +25,8 @@ function handleLogout(req, res) {
       secure: false,
       sameSite: "lax",
     });
-    return res.status(200).json({ message: "Logged out" });
   } catch (err) {
-    res.status(500).json({ message: "Logout failed" });
+    console.log(err)
   }
 } //change needed in this before deployment
 

@@ -4,6 +4,8 @@ import { verifyIp } from "../../utility/verifyip";
 import { useAppSelector } from "../../app/hook";
 import { useNavigate } from "react-router-dom";
 import { apiUrl } from "../../config";
+import Overlay from "../overlays/Overlay";
+import Loader from "../overlays/Loader";
 
 interface Props {
   dnsName: string;
@@ -15,19 +17,29 @@ const AddDomain = ({ dnsName }: Props) => {
   const [message, setMessage] = useState<string>("");
   const [valid, setValid] = useState<boolean>(false);
   const [loading, isLoading] = useState<boolean>(false);
+  //for overlays
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [desc, setDesc] = useState<string>("");
+
   const _id = useAppSelector((state) => state.user.user?._id);
   const navigate = useNavigate();
 
   const handleVerifyIp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     isLoading(true);
-
     const result = await verifyIp(publicip, _id);
-
     setMessage(result.message);
     setValid(result.valid);
+    console.log(result.status);
+    if (result.status === 402) {
+      setDesc(result.message);
+      setShowOverlay(true);
+      isLoading(false);
+      return;
+    }
     isLoading(false);
   };
+
   const handleCreateDomain = async () => {
     try {
       const response = await axios.post(
@@ -47,8 +59,20 @@ const AddDomain = ({ dnsName }: Props) => {
       console.log("add domain err :", error);
     }
   };
+  const handleCloseOverlay = () => {
+    setShowOverlay(false);
+  };
   return (
     <div>
+      {showOverlay && (
+        <Overlay
+          title="Access Denied"
+          message={desc}
+          onClose={handleCloseOverlay}
+          showClose={true}
+        />
+      )}
+      {loading && <Loader />}
       <div className="block lg:flex lg:justify-center lg:items-center bg-[#3A3633] w-full mt-20 rounded">
         <form
           className="flex justify-center items-center p-2"
@@ -81,7 +105,7 @@ const AddDomain = ({ dnsName }: Props) => {
               className="ml-1 p-2 bg-white rounded outline-none"
               onChange={(e) => setPublicip(e.target.value)}
               id="publicip"
-              disabled = {valid}
+              disabled={valid}
               required
             />
           </div>
@@ -96,27 +120,21 @@ const AddDomain = ({ dnsName }: Props) => {
               className="ml-1 p-2 bg-white rounded outline-none"
               onChange={(e) => setRecordType(e.target.value)}
               id="publicip"
+              disabled={valid}
             >
               <option> </option>
               <option value={"A"}>A</option>
               <option value={"CNAME"}>CNAME</option>
             </select>
           </div>
-          {loading ? (
-            <button
-              className="font-light text-white bg-green-500 px-4 py-2 rounded hover:bg-green-800 ml-2"
-              type="submit"
-            >
-              verifying
-            </button>
-          ) : (
-            <button
-              className="font-light text-white bg-green-500 px-4 py-2 rounded hover:bg-green-800 ml-2"
-              type="submit"
-            >
-              verify
-            </button>
-          )}
+
+          <button
+            className="font-light text-white bg-green-500 px-4 py-2 rounded hover:bg-green-800 ml-2"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "verifying" : "verify"}
+          </button>
         </form>
         <div className="text-center"></div>
       </div>
