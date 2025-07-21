@@ -9,6 +9,10 @@ import ForgotPassword from "./components/password/ForgotPassword";
 import ResetPassword from "./components/resetPassword/ResetPassword";
 import VerifyPage from "./components/verifyPassword/VerifyPage";
 import GenerateKey from "./components/docs/GenerateKey";
+import TermsOfServices from "./components/home/TermsOfServices";
+import PrivacyPolicy from "./components/home/PrivacyPolicy";
+import NotFound from "./components/overlays/NotFound";
+import AdminSearch from "./components/admin/AdminSearch";
 
 function App() {
   return (
@@ -23,8 +27,10 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/verify-email-page/:email/:token" element={<VerifyPage />} />
         <Route path="/docs/Generate-code" element={<GenerateKey />} />
-        {/* 404 not found Page
-        lazy loading */}
+        <Route path="/terms" element={<TermsOfServices />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/admin/nelson/he/is/the/admin" element={<AdminSearch />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );

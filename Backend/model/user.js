@@ -26,6 +26,11 @@ const userSchema = new Schema({
         required : true,
         unique : true
     },
+    Role : {
+        type : String,
+        enum : ['USER', 'CREATOR'],
+        default : 'USER'
+    },
     resetToken : {
         type : String,
     },

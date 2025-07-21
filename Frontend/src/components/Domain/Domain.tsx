@@ -3,15 +3,17 @@ import Navbar from "../navbar/Navbar";
 import axios from "axios";
 import AddDomain from "./AddDomain";
 import { apiUrl } from "../../config";
+import Loader from "../overlays/Loader";
 
 const Domain = () => {
   const [message, setMessage] = useState<string>("");
   const [available, setAvailable] = useState<boolean>(false);
   const [dns, setDns] = useState<string>("");
+  const [loading, isLoading] = useState<boolean>(false);
   const checkAvailability = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("submitted");
     try {
+      isLoading(true);
       const formData = new FormData(e.currentTarget);
       const dns = formData.get("dns") as string;
 
@@ -20,16 +22,12 @@ const Domain = () => {
         setAvailable(false);
         return;
       }
-      const response = await axios.get(
-        `${apiUrl}/dns/check-availability`,
-        {
-          params: { dns },
-          withCredentials: true,
-        }
-      );
+      const response = await axios.get(`${apiUrl}/dns/check-availability`, {
+        params: { dns },
+        withCredentials: true,
+      });
       setMessage(response.data.message);
       setAvailable(response.status === 200);
-      console.log(message);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         const msg = err.response?.data?.message || "Something went wrong.";
@@ -37,11 +35,13 @@ const Domain = () => {
       } else {
         setMessage("Unexpected error occurred.");
       }
+    } finally {
+      isLoading(false);
     }
   };
-  console.log(message);
   return (
     <div className="scrollbar-hidden">
+      {loading && <Loader />}
       <Navbar />
       <div className="absolute w-full p-4 mt-[45px] bg-[#2C2926] top-12">
         <form method="get" onSubmit={checkAvailability}>
@@ -66,7 +66,12 @@ const Domain = () => {
               />
               <button
                 type="submit"
-                className="font-light text-white bg-green-500 px-4 py-2 rounded hover:bg-green-800"
+                disabled={!dns.trim() || available}
+                className={`font-light text-white px-4 py-2 rounded transition-all duration-300 ${
+                  !dns.trim() || available
+                    ? "bg-gray-500 cursor-not-allowed"
+                    : "bg-green-500 hover:bg-green-700"
+                }`}
               >
                 Check Availability
               </button>

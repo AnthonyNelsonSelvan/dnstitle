@@ -13,11 +13,12 @@ const ForgotPassword = () => {
     try {
       const response = await axios.post(
         `${apiUrl}/password/forgot-password`,
-        { email: email },
+        { email },
         { withCredentials: true }
       );
       if (response.status === 200) {
-        return setMessage(response.data.message);
+        setMessage(response.data.message);
+        setError(false);
       }
     } catch (err: unknown) {
       setError(true);
@@ -28,45 +29,51 @@ const ForgotPassword = () => {
       }
     }
   };
+
   return (
-    <div>
+    <div className="min-h-screen bg-[#1E1E1E] flex flex-col items-center justify-center p-4">
       {message && (
         <p
-          className={`text-center w-100vw top-0 ${
-            error ? "text-red-800 bg-red-400" : "text-green-500 bg-green-300"
+          className={`text-center w-full max-w-md mb-4 px-4 py-2 rounded ${
+            error ? "text-red-800 bg-red-300" : "text-green-800 bg-green-300"
           }`}
         >
           {message}
         </p>
       )}
-      <div className="flex justify-center items-center h-screen">
-        <div className="w-110 h-60 rounded bg-[#2C2926] shadow p-5">
-          <form className="space-y-2" onSubmit={handleForgotPassword}>
-            <h1 className="font-bold text-[#F5F3EE] test-2xl">
-              Account recovery
-            </h1>
-            <label htmlFor="email" className="inputTitle">
-              Enter email of your Account :
-            </label>
-            <input
-              type="text"
-              id="email"
-              className="inputBox"
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-              placeholder="Email address"
-              required
-            />
-            <p className="text-gray-700 text-center">
-              You will receive reset password link in your email.
-            </p>
-            <input type="submit" value={"Next"} className="btn" />
-          </form>
-        </div>
+
+      <div className="w-full max-w-md bg-[#2C2926] shadow-lg rounded-lg p-6">
+        <form onSubmit={handleForgotPassword} className="space-y-4">
+          <h1 className="text-2xl font-bold text-center text-[#F5F3EE]">
+            Recover Your Account
+          </h1>
+
+          <label htmlFor="email" className="inputTitle block">
+            Enter your account email:
+          </label>
+          <input
+            type="email"
+            id="email"
+            className="inputBox w-full"
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email address"
+            required
+          />
+
+          <p className="text-sm text-gray-400 text-center">
+            You'll receive a password reset link if the email is valid.
+          </p>
+
+          <input
+            type="submit"
+            value="Send Reset Link"
+            className="btn w-full"
+          />
+        </form>
       </div>
     </div>
   );
 };
 
 export default ForgotPassword;
+

@@ -26,15 +26,12 @@ const AllDomains = () => {
   const [recordType, setRecordType] = useState<string>("");
   const [name, setName] = useState<string>("");
   const _id = useAppSelector((state) => state.user.user?._id);
-  
 
-  
   useEffect(() => {
-    
     const getDomains = async () => {
       if (!_id) return;
-      console.log(_id);
       try {
+        isLoading(true);
         const response = await axios.get(`${apiUrl}/dns/userDomains`, {
           params: { _id },
           withCredentials: true,
@@ -42,6 +39,8 @@ const AllDomains = () => {
         setDnsRecord(response.data);
       } catch (err) {
         console.log(err);
+      }finally{
+        isLoading(false)
       }
     };
 
@@ -50,7 +49,7 @@ const AllDomains = () => {
 
   const handleDeleteDomain = async (dnsName: string) => {
     try {
-      console.log(_id);
+      isLoading(true);
       const response = await axios.delete(`${apiUrl}/dns/deleteDomain`, {
         data: { dnsName, _id },
         withCredentials: true,
@@ -59,6 +58,8 @@ const AllDomains = () => {
       console.log(response.data.message); //deletion confirmation message here
     } catch (error) {
       console.log(error);
+    }finally{
+      isLoading(false)
     }
   };
   const handleVerifyIp = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -66,31 +67,32 @@ const AllDomains = () => {
     isLoading(true);
 
     const result = await verifyIp(publicIp, _id);
+    console.log(result.message)//do something about this message
 
     setValid(result.valid);
     isLoading(false);
   };
   const handleUpdateDomain = async () => {
     try {
-      console.log(name);
+      isLoading(true);
       const response = await axios.post(`${apiUrl}/dns/update-domain`, {
         dnsName: name,
         recordType,
         publicIp,
         userRef: _id,
       });
-      if (response.status === 200) {
-        window.location.reload();
-      } else {
-        console.log("some error occurred");
-      }
+      console.log(response); //any alerts
+      window.location.reload();
     } catch (error) {
       console.log(error);
+    }finally{
+      isLoading(false)
     }
   };
   return (
     <>
       <Navbar />
+      {loading && <Loader />}
       <div className="absolute w-full p-4 mt-[45px] bg-[#2C2926] top-12">
         <div
           className={`grid ${!editId ? "grid-cols-5" : "grid-cols-6"}

@@ -3,11 +3,12 @@ import DomainLimit from "../model/dns.limit.js";
 import sendBindJob from "../queue/bindUpdate.job.js";
 import profanityCheck from "../utils/profanity.js";
 import guessRecordType from "../utils/recordType.js";
+import User from "../model/user.js";
 
 async function handleCreateDomainName(req, res) {
   try {
     const { dnsName, publicIp, userRef, recordType } = req.body;
-    if (!dnsName && !publicIp && !recordType) {
+    if (!dnsName || !publicIp || !recordType) {
       return res
         .status(400)
         .json({ message: "all fields are required to fill" });
@@ -17,6 +18,10 @@ async function handleCreateDomainName(req, res) {
         message:
           "please login or signup before trying to make your domain name",
       });
+    }
+    const existingDNS = await DNS.findOne({ dnsName });
+    if (existingDNS) {
+      return res.status(400).json({ message: "Domain name already taken." });
     }
     const isCorrectRecordType = guessRecordType(publicIp);
     if (isCorrectRecordType !== recordType) {
@@ -56,17 +61,16 @@ async function handleCreateDomainName(req, res) {
         publicIp: publicIp,
         recordType: recordType,
       });
-      if (isDone) {
-        await DomainLimit.updateOne(
-          { userId: userRef },
-          { $inc: { domainCount: 1 } }
-        );
-      } else {
+      if (!isDone) {
         await DNS.deleteOne({ dnsName: dns.dnsName });
         return res.status(500).json({
           message: "Failed to update DNS records. Please try again.",
         });
       }
+      await DomainLimit.updateOne(
+        { userId: userRef },
+        { $inc: { domainCount: 1 } }
+      );
     }
 
     return res.status(200).json({
@@ -85,8 +89,11 @@ async function handleDeleteDomainName(req, res) {
     if (!dns) {
       return res.status(404).json({ message: "Domain Name Not Found" });
     }
-    if (!dns.userRef.equals(_id)) {
-      return res.status(403).json({ message: "User Verification Failed" });
+    const user = await User.findById(_id);
+    if (!(user.Role === "CREATOR")) {
+      if (!dns.userRef.equals(_id)) {
+        return res.status(403).json({ message: "User Verification Failed" });
+      }
     }
     const isDone = await sendBindJob("delete-domain", {
       dnsName: dnsName,
@@ -96,7 +103,7 @@ async function handleDeleteDomainName(req, res) {
       await DNS.deleteOne({ dnsName: dns.dnsName });
       await DomainLimit.updateOne(
         { userId: _id },
-        { $inc : { domainCount: -1 } }
+        { $inc: { domainCount: -1 } }
       );
     } else {
       //maybe alert it is done or not
@@ -113,6 +120,23 @@ async function handleDeleteDomainName(req, res) {
 async function handleCheckAvailability(req, res) {
   try {
     const { dns } = req.query;
+
+    const hasTooManyHyphens = /---+/.test(dns); // checks for 3 or more in a row
+    if (hasTooManyHyphens) {
+      return res.status(400).json({
+        message: "Domain cannot contain more than 2 hyphens in a row.",
+      });
+    }
+
+    if (!dns || typeof dns !== "string" || !dns.trim()) {
+      return res.status(400).json({ message: "Domain name is required" });
+    }
+    if (!/^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(dns)) {
+      return res.status(400).json({
+        message:
+          "The domain name you select is invalid please remove any symbol or '.' in the domain name. only a '-' is allowed in the middle",
+      });
+    }
     if (profanityCheck(dns))
       return res.status(400).json({
         message:

@@ -1,188 +1,186 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import "./index.css";
+import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { apiUrl } from "../../config";
-import { AxiosError } from "axios";
 import checkPasswordStrength from "../../utility/checkPasswordStrength";
+import Loader from "../overlays/Loader";
+import { Toaster, toast } from "sonner";
+import "./index.css";
 
 interface SuccessResponse {
   message: string;
 }
-
 interface ErrorResponse {
   message: string;
 }
 
 const SignUp = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [cpassword, setCpassword] = useState<string>("");
-  const [serror, setSerror] = useState<string>("");
-  const [passStrength, setPassStrength] = useState<string>("");
-  const [verified, setVerified] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>("");
-  const [error, setError] = useState<boolean>(false);
-  const [merror, setMerror] = useState<boolean>(false);
-  const [valid, setValid] = useState<boolean>(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [cpassword, setCpassword] = useState("");
+  const [passStrength, setPassStrength] = useState("");
+  const [verified, setVerified] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState(false);
+  const [merror, setMerror] = useState(false); // Message error
+  const [valid, setValid] = useState(false);
+  const [loading, isLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const passwordStrength = () => {
       const response = checkPasswordStrength(password);
       if (password.length === 0) return setValid(false);
-      if (2 >= response.score) {
-        setPassStrength("Try Some Stronger Password.");
+      if (response.score <= 2) {
+        setPassStrength("Try a stronger password.");
         setValid(false);
-        return;
+      } else {
+        setPassStrength("");
+        setValid(true);
       }
-      setPassStrength("");
-      setValid(true);
     };
     passwordStrength();
   }, [password]);
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     try {
+      isLoading(true);
       const response = await axios.post<SuccessResponse>(
         `${apiUrl}/user/signup`,
-        {
-          email,
-          password,
-        },
-        {
-          withCredentials: true,
-        }
+        { email: email.trim(), password },
+        { withCredentials: true }
       );
-
-      console.log("Response:", response.data.message);
-      if (response.status === 200) {
-        navigate("/login");
+      toast.success(response.data.message);
+      setTimeout(() => navigate("/login"), 1000);
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const msg = err.response?.data?.message || "Something went wrong.";
+        toast.error(msg);
       }
-    } catch (error) {
-      const axiosError = error as AxiosError<ErrorResponse>;
-      console.log("Axios Error:", axiosError);
-
-      if (axiosError.response?.data?.message) {
-        setSerror(axiosError.response.data.message);
-      } else {
-        setSerror("Something went wrong. Please try again.");
-      }
+    } finally {
+      isLoading(false);
     }
   };
 
   const handleVerifyEmailButton = async (
     e: React.MouseEvent<HTMLButtonElement>
   ) => {
+    e.preventDefault();
     try {
-      e.preventDefault();
+      isLoading(true);
       const response = await axios.post(
         `${apiUrl}/security/email-verification`,
-        { email: email }
+        { email }
       );
-      if (response.status === 201) {
-        setVerified(true);
-      }
+      if (response.status === 201) setVerified(true);
       setMessage(response.data.message);
-    } catch (error) {
-      console.log(error);
-      const axiosError = error as AxiosError<{ message: string }>;
+      setMerror(false);
+    } catch (err) {
+      const axiosError = err as AxiosError<ErrorResponse>;
+      setMessage(axiosError.response?.data.message || "Verification failed.");
       setMerror(true);
-      setMessage(axiosError.response?.data.message || "Something went Wrong");
+    } finally {
+      isLoading(false);
     }
   };
 
-  const checkPassword = () => {
-    if (password !== cpassword) {
-      setError(true);
-    } else {
-      setError(false);
-    }
-  };
+  useEffect(() => {
+    setError(password !== cpassword);
+  }, [password, cpassword]);
+
   return (
-    <div>
-      {message && (
-        <p
-          className={`text-center w-100vw top-0 ${
-            merror ? "text-red-800 bg-red-400" : "text-green-500 bg-green-300"
-          }`}
-        >
-          {message}
-        </p>
-      )}
-      {serror && <p className="top-0 bg-amber-50 text-center">{serror}</p>}
-      <div className="flex justify-center items-center h-screen">
-        <div className="w-110 h-142 rounded bg-[#2C2926] shadow p-6">
-          <form className="space-y-4" onSubmit={handleSignUp}>
-            <h1 className="mb-5 rounded font-bold text-3xl text-center font- text-[#E5C07B] p-5">
-              Sign-Up
-            </h1>
+    <div className="min-h-screen flex items-center justify-center bg-[#1E1E1E] p-4">
+      <Toaster richColors />
+      {loading && <Loader />}
+      <div className="w-full max-w-md bg-[#2C2926] shadow-lg rounded-lg p-6 space-y-4">
+        <form onSubmit={handleSignUp} className="space-y-4">
+          <h1 className="text-3xl font-bold text-center text-[#E5C07B] mb-2">
+            Sign Up
+          </h1>
 
-            <div>
-              <label htmlFor="email" className="inputTitle block mb-1">
-                Email
-              </label>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="email"
-                  id="email"
-                  className="inputBox flex-1"
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
-                  required
-                />
-                <button
-                  type="button"
-                  className={`px-4 py-2 rounded-md text-white transition duration-200 ${
-                    verified
-                      ? "bg-green-600 hover:bg-green-700"
-                      : "bg-blue-600 hover:bg-blue-700"
-                  }`}
-                  onClick={(e) => handleVerifyEmailButton(e)}
-                  disabled={verified}
-                >
-                  {verified ? "Verified" : "Verify"}
-                </button>
-              </div>
+          {message && (
+            <p
+              className={`text-sm text-center px-3 py-2 rounded ${
+                merror
+                  ? "text-red-800 bg-red-200"
+                  : "text-green-700 bg-green-200"
+              }`}
+            >
+              {message}
+            </p>
+          )}
+
+          <div>
+            <label htmlFor="email" className="inputTitle block mb-1">
+              Email
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="email"
+                id="email"
+                className="inputBox flex-1"
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                onClick={handleVerifyEmailButton}
+                disabled={verified || !email.trim()}
+                className={`px-4 py-2 rounded text-white text-sm ${
+                  verified
+                    ? "bg-green-600 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }`}
+              >
+                {verified ? "Verified" : "Verify"}
+              </button>
             </div>
-            <label htmlFor="password" className="inputTitle">
+          </div>
+
+          <div>
+            <label htmlFor="password" className="inputTitle block mb-1">
               Set Password
             </label>
             <input
               type="password"
               id="password"
-              className="inputBox"
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
+              className="inputBox w-full"
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
-            {passStrength && <p className="text-red-500">{passStrength}</p>}
-            <label htmlFor="cpassword" className="inputTitle">
+            {passStrength && (
+              <p className="text-sm text-red-500 mt-1">{passStrength}</p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="cpassword" className="inputTitle block mb-1">
               Confirm Password
             </label>
             <input
               type="password"
               id="cpassword"
-              className="inputBox"
+              className="inputBox w-full"
               onChange={(e) => {
                 setCpassword(e.target.value);
               }}
-              onKeyUp={checkPassword}
               required
             />
-            {error && <p className="text-center">password does not match</p>}
-            <input
-              type="submit"
-              value={"Sign Up"}
-              className="btn"
-              disabled={!valid || error || !verified}
-            />
-          </form>
-        </div>
+            {error && (
+              <p className="text-sm text-red-500 mt-1">
+                Passwords do not match.
+              </p>
+            )}
+          </div>
+
+          <input
+            type="submit"
+            value="Sign Up"
+            className="btn w-full"
+            disabled={!valid || error || !verified}
+          />
+        </form>
       </div>
     </div>
   );

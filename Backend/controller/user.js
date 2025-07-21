@@ -37,8 +37,11 @@ async function handleLogIn(req, res) {
   if (!user) {
     return res.status(400).json({ message: "Incorrect username or password" });
   }
+  console.log(password)
+  console.log(user.password)
   try {
     const isMatch = await handleVerifyPass(user.password, password);
+    console.log(isMatch, ",is it true?")
     if (isMatch) {
       const cookieToken = await handleSignToken(user);
       setCookie(res, cookieToken);

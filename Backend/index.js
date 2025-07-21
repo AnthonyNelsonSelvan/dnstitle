@@ -13,6 +13,7 @@ import dnsRouter from "./routes/dns.js";
 import securityRouter from "./routes/security.js";
 import oAuthRouter from "./routes/authRoutes.js";
 import passwordRouter from "./routes/password.js";
+import adminRouter from "./routes/admim.js"
 
 const app = express();
 const PORT = 3000;
@@ -20,13 +21,6 @@ const PORT = 3000;
 connectMongoose(
   process.env.MONGO_URI || "mongodb://127.0.0.1:27017/DnsProject"
 );
-
-// app.use(
-//   cors({
-//     origin: "http://test.anthony.live", // Change to your frontend URL
-//     credentials: true,
-//   })
-// );
 
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -38,6 +32,7 @@ app.use("/api/dns", dnsRouter);
 app.use("/api/security", securityRouter);
 app.use("/api/auth", oAuthRouter);
 app.use("/api/password", passwordRouter);
+app.use("/api/admin",adminRouter)
 
 app.listen(PORT, () => {
   try {

@@ -1,9 +1,7 @@
 import Navbar from "../navbar/Navbar";
-import pic1 from "../../assets/About-dns.jpg";
-import pic2 from "../../assets/pic2.jpg";
-import pic3 from "../../assets/pic3.jpg";
-import pic4 from "../../assets/pic4.jpg";
 import "./index.css";
+import CardGrid from "../CardGrid/CardGrid";
+import { Footer } from "./Footer";
 
 const Home = () => {
   return (
@@ -35,8 +33,8 @@ const Home = () => {
       </div>
       <div className="flex mt-5 md:mt-10 justify-center items-center w-full text-center">
         <a href="/domain">
-          <button className="m-2 p-5 bg-red-600 font-bold rounded-2xl text-white flex hover:bg-red-800">
-            Get Sub-domains for free
+          <button className="m-4 px-6 py-4 bg-red-600 font-bold rounded-2xl text-white flex items-center justify-center shadow-md hover:bg-red-700 hover:scale-105 active:scale-95 transition-all duration-200 ease-in-out">
+            Get Sub-domains for Free
           </button>
         </a>
       </div>
@@ -58,68 +56,8 @@ lg:bg-white bg-[#1E1B18] lg:hover:bg-[#1E1B18] lg:mt-60"
           #Completely Free
         </h1>
       </div>
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 place-items-center mt-20">
-        <div className="text-center bg-[#eeeede] w-150 h-auto rounded font-bold m-15">
-          <img
-            src={pic1}
-            className="w-full h-60 object-cover rounded shadow"
-          ></img>
-          <h1 className="text-3xl underline">About</h1>
-          <p className="p-5">
-            At DnsTitle, we believe that creating an online presence should be
-            simple, accessible, and free. Whether you're a developer,
-            entrepreneur, or creative professional, our platform provides free
-            subdomains to help you bring your ideas to life—without hidden costs
-            or complicated setups.
-          </p>
-        </div>
-        <div className="text-center bg-[#F5F5DC] w-150 m-15 h-auto rounded font-bold ">
-          <img
-            src={pic2}
-            className="w-full h-60 object-cover rounded shadow"
-          ></img>
-          <h1 className="text-3xl underline">Our Mission</h1>
-          <p className="p-5">
-            Our goal is to empower individuals and businesses by offering a
-            seamless way to establish an online identity. We understand the
-            importance of having a unique and reliable web address, and we make
-            it easy for you to claim one, instantly.
-          </p>
-        </div>
-        <div className="text-center bg-[#F5F5DC] w-150 m-15 h-auto rounded font-bold">
-          <img
-            src={pic3}
-            className="w-full h-60 object-cover rounded shadow"
-          ></img>
-          <h1 className="text-3xl underline">Why Choose DnsTitle?</h1>
-          <ul className="list-disc p-5 pl-10 text-left">
-            <li>100% Free, Forever – No subscriptions, no hidden fees.</li>
-            <li>
-              Instant Activation – Get your subdomain up and running in seconds.
-            </li>
-            <li>
-              Reliable & Secure – Optimized for performance and stability.
-            </li>
-            <li>
-              Customizable & Versatile – Perfect for personal websites,
-              portfolios, startups, and experimental projects.
-            </li>
-            <li>
-              User-Friendly – No technical expertise required; just choose your
-              subdomain and start using it.
-            </li>
-          </ul>
-        </div>
-        <div className="text-center bg-[#F5F5DC] w-150 m-15 h-auto rounded font-bold">
-          <img src={pic4} className="w-full h-60 object-cover rounded shadow" />
-          <h1 className="text-3xl underline">Get Started Today</h1>
-          <p className="p-5">
-            With DnsTitle, you can claim a free subdomain and take the first
-            step toward building your online presence. Whether you need a site
-            for a project, a personal blog, or an app, we’ve got you covered.
-          </p>
-        </div>
-      </div>
+      <CardGrid />
+      <Footer />
     </div>
   );
 };

@@ -24,14 +24,14 @@ const Navbar = () => {
         dispatch(clearUser());
         setLoading(false);
       } else {
-        const { _id, username, email, isBanned } = userData.user;
+        const { _id, username, email, isBanned,Role } = userData.user;
         setDesc(
           "Your account is permanently banned. You have breaked our rules several times."
         );
         setShowOverlay(isBanned);
         setAuth(true);
         setUser(username);
-        dispatch(addUser({ _id, username, email }));
+        dispatch(addUser({ _id, username, email, Role }));
         setLoading(false);
       }
     };
@@ -47,9 +47,6 @@ const Navbar = () => {
     window.location.reload();
   };
 
-  const handleCloseOverlay = () => {
-    setShowOverlay(false);
-  };
 
   return (
     <nav className="flex justify-between item center m-5">
@@ -58,15 +55,16 @@ const Navbar = () => {
         <Overlay
           title="Access Denied"
           message={desc}
-          onClose={handleCloseOverlay}
           showClose={false}
           onLogout={handleDeleteCookie}
           showLogout={true}
         />
       )}
+      <a href="/">
       <h1 className="text-5xl text-[#E5C07B] hover:scale-95 font-bold transition ease-linear">
         DnsTitle
       </h1>
+      </a>
       <ul className="flex justify-center items-center text-[#E5C07B]">
         {auth ? (
           <>
@@ -79,7 +77,7 @@ const Navbar = () => {
             </li>
             <li>
               <button
-                className="border border-none bg-[#c19a6b] p-1 rounded text-[#F5F3EE] hover:text-[#e7d29f]"
+                className="border border-none bg-[#c19a6b] p-1 rounded text-[#3a2f24] hover:text-[#2a2118]"
                 onClick={handleDeleteCookie}
               >
                 Logout

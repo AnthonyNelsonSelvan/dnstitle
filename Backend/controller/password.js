@@ -51,9 +51,9 @@ async function handleVerifyResetPasswordToken(req, res) {
 }
 
 async function handleChangeForgottenPassword(req, res) {
-  async (req, res) => {
     try {
       const { password } = req.body;
+      console.log(password)
       const token = req.params.token;
       const resetToken = crypto
         .createHash("sha256")
@@ -68,17 +68,18 @@ async function handleChangeForgottenPassword(req, res) {
           .status(400)
           .json({ message: "Reset Token has been expired" });
       }
+      console.log("dum dum")
       user.password = password;
       user.resetToken = undefined;
       user.resetTokenExpiry = undefined;
       await user.save();
+      console.log("came here")
       return res.status(200).json({ message: "Password changed successfully" });
     } catch (error) {
       console.log("password change error ");
-      return res.status(500).json({ message: "Internal server failure" });
+      return res.status(500).json({ message: "Something went Wrong." });
     }
   };
-}
 
 export {
   handleForgotPasswordEmail,

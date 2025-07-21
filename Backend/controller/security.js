@@ -24,7 +24,9 @@ function handleLogout(req, res) {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
+      path: "/"
     });
+    res.status(200).json({message : "Logged Out"})
   } catch (err) {
     console.log(err)
   }

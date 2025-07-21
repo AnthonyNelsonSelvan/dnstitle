@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { apiUrl } from "../../config";
 import Overlay from "../overlays/Overlay";
 import Loader from "../overlays/Loader";
+import { Toaster, toast } from "sonner";
 
 interface Props {
   dnsName: string;
@@ -42,6 +43,7 @@ const AddDomain = ({ dnsName }: Props) => {
 
   const handleCreateDomain = async () => {
     try {
+      isLoading(true);
       const response = await axios.post(
         `${apiUrl}/dns/create-dns`,
         {
@@ -52,11 +54,17 @@ const AddDomain = ({ dnsName }: Props) => {
         },
         { withCredentials: true }
       );
-      if (response.status === 200) {
-        navigate("/");
+      toast.success(response.data.message);
+      setTimeout(() => navigate("/"),1000)
+      
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const msg = err.response?.data?.message || "Something went wrong.";
+        toast.error(msg);
       }
-    } catch (error) {
-      console.log("add domain err :", error);
+      console.log("add domain err :", err);
+    } finally {
+      isLoading(false);
     }
   };
   const handleCloseOverlay = () => {
@@ -120,7 +128,6 @@ const AddDomain = ({ dnsName }: Props) => {
               className="ml-1 p-2 bg-white rounded outline-none"
               onChange={(e) => setRecordType(e.target.value)}
               id="publicip"
-              disabled={valid}
             >
               <option> </option>
               <option value={"A"}>A</option>
@@ -152,6 +159,7 @@ const AddDomain = ({ dnsName }: Props) => {
           Big button, big move—let’s go!
         </p>
       )}
+      <Toaster richColors/>
     </div>
   );
 };

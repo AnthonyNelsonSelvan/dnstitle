@@ -19,6 +19,7 @@
     "react-dom": "^19.0.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.4.1",
+    "sonner": "^2.0.6",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
