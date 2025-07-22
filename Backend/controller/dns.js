@@ -102,7 +102,7 @@ async function handleDeleteDomainName(req, res) {
     if (isDone) {
       await DNS.deleteOne({ dnsName: dns.dnsName });
       await DomainLimit.updateOne(
-        { userId: _id },
+        { userId: dns.userRef },
         { $inc: { domainCount: -1 } }
       );
     } else {
