@@ -18,7 +18,6 @@ async function checkIpAbuse(Ip) {
         Accept: "application/json",
       },
     });
-    console.log(response)
     const score = response.data.data.abuseConfidenceScore;
     return 50 <= score;
   } catch (error) {

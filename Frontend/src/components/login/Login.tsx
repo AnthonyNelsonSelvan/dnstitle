@@ -2,7 +2,7 @@ import "./index.css";
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiUrl } from "../../config";
+import { apiUrl, recaptcha_site_key } from "../../config";
 import Loader from "../overlays/Loader";
 import { Toaster, toast } from "sonner";
 
@@ -15,14 +15,23 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      const token = await window.grecaptcha.execute(recaptcha_site_key, {
+        action: "login",
+      });
+      const res = await axios.post(`${apiUrl}/verifyCaptcha/verify`, { token });
       isLoading(true);
-      const response = await axios.post(
-        `${apiUrl}/user/login`,
-        { email, password },
-        { withCredentials: true }
-      );
-      toast.success(response.data.message);
-      setTimeout(() => navigate("/"), 1000);
+      if (res.data.success) {
+        const response = await axios.post(
+          `${apiUrl}/user/login`,
+          { email, password },
+          { withCredentials: true }
+        );
+        console.log(response.data.message)
+        toast.success(response.data.message);
+        setTimeout(() => navigate("/"), 1000);
+      } else {
+        toast.error(res.data.message);
+      }
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const msg =
@@ -37,7 +46,7 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://test.anthony.live/api/auth/google";
+    window.location.href = `${apiUrl}/auth/google`;
   };
 
   return (

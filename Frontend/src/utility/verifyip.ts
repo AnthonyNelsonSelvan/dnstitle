@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { apiUrl } from "../config";
+import { apiUrl, recaptcha_site_key } from "../config";
 
 export const verifyIp = async (rawUrl: string,id : string | undefined): Promise<{
   message: string;
@@ -7,6 +7,11 @@ export const verifyIp = async (rawUrl: string,id : string | undefined): Promise<
   status : number
 }> => {
   try {
+    const token = await window.grecaptcha.execute(recaptcha_site_key,{
+      action : "verifyip"
+    })
+    const res = await axios.post(`${apiUrl}/verifyCaptcha/verify`, { token });
+      if (res.data.success) {
     const response = await axios.get(`${apiUrl}/dns/verify-ip`, {
       params: { rawUrl, id },
       withCredentials: true,
@@ -16,6 +21,13 @@ export const verifyIp = async (rawUrl: string,id : string | undefined): Promise<
       valid: true,
       status : response.status,
     };
+  }else{
+    return {
+      message : "Suspicious activity detected.",
+      valid : false,
+      status : 400
+    }
+  }
   } catch (err: unknown) {
     const error = err as AxiosError<{ message: string }>;
     if (error.response?.data?.message) {

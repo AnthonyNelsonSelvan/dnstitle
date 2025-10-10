@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
-import { apiUrl } from "../../config";
+import { apiUrl, recaptcha_site_key } from "../../config";
 import checkPasswordStrength from "../../utility/checkPasswordStrength";
 import Loader from "../overlays/Loader";
 import { Toaster, toast } from "sonner";
@@ -45,14 +45,22 @@ const SignUp = () => {
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      isLoading(true);
-      const response = await axios.post<SuccessResponse>(
-        `${apiUrl}/user/signup`,
-        { email: email.trim(), password },
-        { withCredentials: true }
-      );
-      toast.success(response.data.message);
-      setTimeout(() => navigate("/login"), 1000);
+      const token = await window.grecaptcha.execute(recaptcha_site_key, {
+        action: "signin",
+      });
+      const res = await axios.post(`${apiUrl}/verifyCaptcha/verify`, { token });
+      if (res.data.success) {
+        isLoading(true);
+        const response = await axios.post<SuccessResponse>(
+          `${apiUrl}/user/signup`,
+          { email: email.trim(), password },
+          { withCredentials: true }
+        );
+        toast.success(response.data.message);
+        setTimeout(() => navigate("/login"), 1000);
+      } else {
+        toast.error(res.data.message);
+      }
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         const msg = err.response?.data?.message || "Something went wrong.";
@@ -83,6 +91,10 @@ const SignUp = () => {
     } finally {
       isLoading(false);
     }
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = "http://test.anthony.live/api/auth/google";
   };
 
   useEffect(() => {
@@ -181,6 +193,15 @@ const SignUp = () => {
             disabled={!valid || error || !verified}
           />
         </form>
+        <div className="mt-4 semi-bold space-y-2 text-center">
+          <p className="text-yellow-400 font-semibold">Other login methods</p>
+          <p
+            className="text-green-300 cursor-pointer hover:underline"
+            onClick={handleGoogleLogin}
+          >
+            Authenticate with Google
+          </p>
+        </div>
       </div>
     </div>
   );

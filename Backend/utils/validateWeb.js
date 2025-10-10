@@ -18,7 +18,7 @@ async function validateWebsite(req, res) {
   const isBan = await handleIsBanned(id);
 
   if (isBan) {
-    handleLogout(req,res);
+    handleLogout(req, res);
     return res.status(402).json({
       message:
         "Your Account has been Permanently Banned, You would be logged out.",
@@ -82,7 +82,6 @@ async function validateWebsite(req, res) {
 
   try {
     const response = await checkWithProtocol("http", url, veriyKey, ipToCheck);
-    console.log(response);
     if (response.rateLimited) {
       return res.status(429).json({
         message:
@@ -92,7 +91,7 @@ async function validateWebsite(req, res) {
     if (response.isAbuseIp) {
       const response = await IncWarnTimes(id);
       if (!response.result) {
-        handleLogout(req,res);
+        handleLogout(req, res);
         return res.status(402).json({
           message:
             "Your Account has been Permanently Banned, You would be logged out.",
@@ -119,11 +118,10 @@ async function validateWebsite(req, res) {
         veriyKey,
         ipToCheck
       );
-      console.log(response);
       if (response.isAbuseIp) {
         const response = await IncWarnTimes(id);
         if (!response.result) {
-          handleLogout(req,res);
+          handleLogout(req, res);
           return res.status(402).json({
             message:
               "Your Account has been Permanently Banned, You have been logged out.",

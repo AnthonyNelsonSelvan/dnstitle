@@ -5,6 +5,7 @@ import { useAppSelector } from "../../app/hook";
 import { apiUrl } from "../../config";
 import { verifyIp } from "../../utility/verifyip";
 import Loader from "../overlays/Loader";
+import { Toaster, toast } from "sonner";
 
 interface DnsRecord {
   _id: string;
@@ -39,8 +40,8 @@ const AllDomains = () => {
         setDnsRecord(response.data);
       } catch (err) {
         console.log(err);
-      }finally{
-        isLoading(false)
+      } finally {
+        isLoading(false);
       }
     };
 
@@ -55,44 +56,54 @@ const AllDomains = () => {
         withCredentials: true,
       });
       window.location.reload();
-      console.log(response.data.message); //deletion confirmation message here
+      toast.success(response.data.message);
     } catch (error) {
+      toast.error("Something went wrong");
       console.log(error);
-    }finally{
-      isLoading(false)
+    } finally {
+      isLoading(false);
     }
   };
   const handleVerifyIp = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    isLoading(true);
-
-    const result = await verifyIp(publicIp, _id);
-    console.log(result.message)//do something about this message
-
-    setValid(result.valid);
-    isLoading(false);
+    try {
+      isLoading(true);
+      const result = await verifyIp(publicIp, _id);
+      toast.success("Ip has been verified, Please click save to confirm.");
+      setValid(result.valid);
+    } catch (error) {
+      toast.error(
+        "Something went wrong, please check if you added the ownership file."
+      );
+      console.log(error);
+    } finally {
+      isLoading(false);
+    }
   };
   const handleUpdateDomain = async () => {
     try {
       isLoading(true);
-      const response = await axios.post(`${apiUrl}/dns/update-domain`, {
+      await axios.post(`${apiUrl}/dns/update-domain`, {
         dnsName: name,
         recordType,
         publicIp,
         userRef: _id,
       });
-      console.log(response); //any alerts
+      toast.success("Updated Succesfully.");
       window.location.reload();
     } catch (error) {
+      toast.error("Something went Wrong.");
       console.log(error);
-    }finally{
-      isLoading(false)
+    } finally {
+      isLoading(false);
     }
   };
+  console.log(dnsRecord);
   return (
     <>
       <Navbar />
       {loading && <Loader />}
+      <Toaster richColors />
       <div className="absolute w-full p-4 mt-[45px] bg-[#2C2926] top-12">
         <div
           className={`grid ${!editId ? "grid-cols-5" : "grid-cols-6"}
@@ -117,7 +128,7 @@ const AllDomains = () => {
                 {dns.dnsName}
               </p>
               {!edit ? (
-                <p className="mr-5 text-gray-700 opacity-80 font-medium">
+                <p className="mr-5 text-gray-700 opacity-50 font-medium">
                   {dns.recordType}
                 </p>
               ) : (

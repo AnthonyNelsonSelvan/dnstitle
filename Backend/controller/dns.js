@@ -74,7 +74,7 @@ async function handleCreateDomainName(req, res) {
     }
 
     return res.status(200).json({
-      message: "All set!! WELCOME, Don't forget to renew it every month",
+      message: "All set!! WELCOME, Don't forget to renew it every 3 month",
     });
   } catch (error) {
     console.log(error);
@@ -82,17 +82,35 @@ async function handleCreateDomainName(req, res) {
   }
 }
 
-async function handleDeleteDomainName(req, res) {
+async function handleDeleteDomainName(req, res, data) {
   try {
-    const { dnsName, _id } = req.body;
+    let dnsName, _id;
+    let isCronJob = false;
+    if (data && data.isCronJob) {
+      ({ dnsName, isCronJob } = data);
+    } else {
+      ({ dnsName, _id } = req.body);
+    }
+
+    if (!dnsName) {
+      if (!isCronJob)
+        return res.status(400).json({ message: "Domain Name is required" });
+      else return;
+    }
+
     const dns = await DNS.findOne({ dnsName: dnsName });
     if (!dns) {
-      return res.status(404).json({ message: "Domain Name Not Found" });
+      if (!isCronJob)
+        return res.status(404).json({ message: "Domain Name Not Found" });
+      else return;
     }
-    const user = await User.findById(_id);
-    if (!(user.Role === "CREATOR")) {
-      if (!dns.userRef.equals(_id)) {
-        return res.status(403).json({ message: "User Verification Failed" });
+
+    if (!isCronJob) {
+      const user = await User.findById(_id);
+      if (!(user.Role === "CREATOR")) {
+        if (!dns.userRef.equals(_id)) {
+          return res.status(403).json({ message: "User Verification Failed" });
+        }
       }
     }
     const isDone = await sendBindJob("delete-domain", {
@@ -110,10 +128,14 @@ async function handleDeleteDomainName(req, res) {
       return;
     }
 
-    return res.status(200).json({ message: "Successfully Removed" });
+    if (!isCronJob)
+      return res.status(200).json({ message: "Successfully Removed" });
+    return;
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: " Something went wrong" });
+    if (!isCronJob)
+      return res.status(500).json({ message: " Something went wrong" });
+    return;
   }
 }
 

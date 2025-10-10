@@ -1,0 +1,34 @@
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+
+# Environment variables
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor settings
+.vscode/
+.idea/
+
+# Build
+dist/
+build/
+
+# MongoDB volume (if accidentally added)
+mongo-data/
+
+# BIND9 config/cache/records/log directories
+bind/cache/
+bind/records/
+bind/log/
+secrets/
+
+# Optional lock files (uncomment if needed)
+# package-lock.json
+# yarn.lock
