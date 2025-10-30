@@ -51,35 +51,32 @@ async function handleVerifyResetPasswordToken(req, res) {
 }
 
 async function handleChangeForgottenPassword(req, res) {
-    try {
-      const { password } = req.body;
-      console.log(password)
-      const token = req.params.token;
-      const resetToken = crypto
-        .createHash("sha256")
-        .update(token)
-        .digest("hex");
-      const user = await User.findOne({ resetToken: resetToken });
-      console.log(user);
-      if (!user)
-        return res.status(403).json({ message: "Invalid token or expired" });
-      if (user.resetTokenExpiry < Date.now()) {
-        return res
-          .status(400)
-          .json({ message: "Reset Token has been expired" });
-      }
-      console.log("dum dum")
-      user.password = password;
-      user.resetToken = undefined;
-      user.resetTokenExpiry = undefined;
-      await user.save();
-      console.log("came here")
-      return res.status(200).json({ message: "Password changed successfully" });
-    } catch (error) {
-      console.log("password change error ");
-      return res.status(500).json({ message: "Something went Wrong." });
+  try {
+    const { password } = req.body;
+    console.log(password)
+    const token = req.params.token;
+    const resetToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+    const user = await User.findOne({ resetToken: resetToken });
+    console.log(user);
+    if (!user)
+      return res.status(403).json({ message: "Invalid token or expired" });
+    if (user.resetTokenExpiry < Date.now()) {
+      return res
+        .status(400)
+        .json({ message: "Reset Token has been expired" });
     }
-  };
+    user.password = password;
+    user.resetToken = undefined;
+    user.resetTokenExpiry = undefined;
+    await user.save();
+    return res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Something went Wrong." });
+  }
+};
 
 export {
   handleForgotPasswordEmail,

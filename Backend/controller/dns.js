@@ -85,7 +85,7 @@ async function handleCreateDomainName(req, res) {
 async function handleDeleteDomainName(req, res, data) {
   try {
     let dnsName, _id;
-    let isCronJob = false;
+    let isCronJob = false;//to check if cron job is deleting because not renewed.
     if (data && data.isCronJob) {
       ({ dnsName, isCronJob } = data);
     } else {

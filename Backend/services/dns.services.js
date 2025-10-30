@@ -25,7 +25,7 @@ const addDomainBind = (dnsName,publicIp,recordType) => {
 
     nsupdate.on("close", (code) => {
       if (code === 0) {
-        resolve(true);  // Resolves the promise
+        resolve(true);  
       } else {
         console.error(`nsupdate failed with code ${code}`);
         console.error(`stderr: ${errorOutput}`);

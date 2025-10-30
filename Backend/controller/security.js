@@ -26,7 +26,7 @@ function handleLogout(req, res) {
       sameSite: "lax",
       path: "/"
     });
-    res.status(200).json({message : "Logged Out"})
+    res.status(200).json({ message: "Logged Out" })
   } catch (err) {
     console.log(err)
   }
@@ -98,7 +98,6 @@ async function handleGenerateKey(req, res) {
   }
   try {
     const Key = handleFuncGenerateKey(10);
-    console.log(Key);
     await redis.set(`Verify:${id}`, `${Key}`, "EX", 3600);
     return res.status(200).json({ secret: Key });
   } catch (error) {
@@ -116,7 +115,7 @@ async function handleWebVerifyKey(req, res) {
     const secretKey = await redis.get(`Verify:${id}`);
     if (!secretKey) return res.status(404).json({ secret: "" });
     return res.status(200).json({ secret: secretKey });
-  } catch (error) {}
+  } catch (error) { }
 }
 
 export {
